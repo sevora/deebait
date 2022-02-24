@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import axios from 'axios';
 
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LockIcon from '@mui/icons-material/Lock';
@@ -15,8 +16,16 @@ import PaperGridItem from './PaperGridItem.js';
 import AlignTextIcon from './AlignTextIcon.js';
 
 class Landing extends Component {
-    componentDidMount() {
+    constructor(props) {
+        super(props);
+        this.onClick = this.onClick.bind(this);
+    }
 
+    onClick() {
+        // add code to handle error when 
+        axios.post(process.env.REACT_APP_API_URL + '/authentication/twitter', {}).then(response => {
+            this.props.successfulAuthentication(response.data.token);
+        });
     }
 
     render() {
@@ -25,16 +34,16 @@ class Landing extends Component {
                 <Grid item container xs={12} md={8}>
                     <Grid item container m={5} mb={2} xs={12} alignItems="center" justifyContent="center">
                         <Grid item>
-                            <Typography variant="h2">
+                            <Typography variant="h2" textAlign="center">
                                 &#60;deebait&#47;&#62;
                             </Typography>
-                            <Typography variant="h4">
+                            <Typography variant="h4" textAlign="center">
                                 The perfect place to argue.
                             </Typography>
                         </Grid>
                         <Grid item>
                             <Box mt={4} sx={{ display: { md: 'none' } }}  mb={1}>
-                                <Button startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
+                                <Button onClick={this.onClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
                             </Box>
                         </Grid>
                     </Grid>
@@ -75,7 +84,7 @@ class Landing extends Component {
                         </Box>
                     </Grid>
                     <Grid item>
-                        <Button startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
+                        <Button onClick={this.onClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
                     </Grid>
                 </Grid>
             </Grid>

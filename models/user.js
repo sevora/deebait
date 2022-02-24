@@ -31,6 +31,14 @@ const userSchema = new Schema({
             }
         }
     ],
+    pointsToSpend: {
+        type: Number,
+        default: 100
+    },
+    pointsReceived: {
+        type: Number,
+        default: 0
+    },
     isBanned: {
         type: Boolean,
         default: false
