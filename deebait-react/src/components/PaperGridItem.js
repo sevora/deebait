@@ -3,13 +3,13 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
-function PaperGridItem(props) {
+function PaperGridItem({ xs='12', md='6', elevation='3', p='3', children }) {
     return (
-        <Grid item xs={props.xs} md={props.md}>
-            <Paper elevation={props.elevation}>
-                <Box p={props.p}>
+        <Grid item xs={xs} md={md}>
+            <Paper elevation={elevation}>
+                <Box p={p}>
                     <Typography variant="body1" component={'div'}>
-                        {props.children}
+                        {children}
                     </Typography>
                 </Box>
             </Paper>
