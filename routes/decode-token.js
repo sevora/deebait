@@ -1,3 +1,4 @@
+// middleware for jsonwebtoken support in header
 const jwt = require('jsonwebtoken');
 
 function decodeTokenMiddleware(request, response, next) {

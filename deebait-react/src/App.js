@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 import createTheme from '@mui/material/styles/createTheme';
 import responsiveFontSizes from '@mui/material/styles/responsiveFontSizes'
@@ -42,14 +42,8 @@ function App() {
         </Helmet>
       </HelmetProvider>
       <ThemeProvider theme={theme}>
-        <div>
-          <Routes>
-            <Route exact path="/" element={<Home />}/>
-          </Routes>
-        </div>
-        <Footer>
-            Developed by Ralph Louis Gopez
-        </Footer>
+        <Home />
+        <Footer />
       </ThemeProvider>
     </Router>
     

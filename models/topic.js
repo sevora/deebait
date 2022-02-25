@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+const uuidv4 = require('uuid').v4;
 const uniqueValidator = require('mongoose-unique-validator');
+
 const { Schema } = mongoose;
 
 const topicSchema =  new Schema({
@@ -8,7 +10,8 @@ const topicSchema =  new Schema({
         unique: true,
         minLength: 1,
         maxLength: 300,
-        required: true,
+        default: () => uuidv4(),
+        required: true
     },
     question: {
         type: String,
@@ -26,6 +29,7 @@ const topicSchema =  new Schema({
                 type: String,
                 minLength: 1,
                 maxLength: 300,
+                default: uuidv4()
             }
         }
     ]

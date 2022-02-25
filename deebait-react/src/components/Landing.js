@@ -18,14 +18,21 @@ import AlignTextIcon from './AlignTextIcon.js';
 class Landing extends Component {
     constructor(props) {
         super(props);
-        this.onClick = this.onClick.bind(this);
+        this.buttonOnClick = this.buttonOnClick.bind(this);
     }
 
-    onClick() {
+    static defaultProps = {
+        onSuccessfulAuthentication: function() { return null },
+        onUnsuccessfulAuthentication: function() { return null }
+    }
+
+    buttonOnClick() {
         // add code to handle error when 
         axios.post(process.env.REACT_APP_API_URL + '/authentication/twitter', {}).then(response => {
-            this.props.successfulAuthentication(response.data.token);
-        });
+            this.props.onSuccessfulAuthentication(response.data.token);
+        }).catch(function(error) {
+            this.props.onUnsuccessfulAuthentication(error);
+        }.bind(this));
     }
 
     render() {
@@ -43,7 +50,7 @@ class Landing extends Component {
                         </Grid>
                         <Grid item>
                             <Box mt={4} sx={{ display: { md: 'none' } }}  mb={1}>
-                                <Button onClick={this.onClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
+                                <Button onClick={this.buttonOnClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
                             </Box>
                         </Grid>
                     </Grid>
@@ -84,7 +91,7 @@ class Landing extends Component {
                         </Box>
                     </Grid>
                     <Grid item>
-                        <Button onClick={this.onClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
+                        <Button onClick={this.buttonOnClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
                     </Grid>
                 </Grid>
             </Grid>

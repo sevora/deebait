@@ -19,7 +19,9 @@ connection.once('open', function() {
 });
 
 const authenticationRouter = require('./routes/authentication.js');
+const userControlsRouter = require('./routes/user-controls.js');
 
 app.use('/authentication', authenticationRouter);
+app.use('/user', userControlsRouter);
 
 app.listen(process.env.PORT || 80);
