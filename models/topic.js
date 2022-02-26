@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const uuidv4 = require('uuid').v4;
-const uniqueValidator = require('mongoose-unique-validator');
 
 const { Schema } = mongoose;
 
@@ -36,5 +35,4 @@ const topicSchema =  new Schema({
 
 }, { timestamps: true });
 
-topicSchema.plugin(uniqueValidator);
 module.exports = mongoose.model('Topic', topicSchema, 'topics');

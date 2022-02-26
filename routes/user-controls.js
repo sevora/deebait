@@ -15,7 +15,7 @@ const Thread = require('../models/thread.js');
  */
 router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, error] = await resolve( User.find({ userID: request.decoded.userID }) );
-    if (error) return response.status(400).send({ title: 'Invalid User', message: 'This user does not exist' });
+    if (error) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
     response.json({ title: 'Success', message: 'This user is valid!' });
 });
 
@@ -25,15 +25,40 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
  */
  router.get('/topics/answered', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'Invalid User', message: 'This user does not exist' });
+    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+
+    // we just wanna unpack every topicID and choiceID from the user's topics
+    let userTopicIDs = [];
+    let userChoiceIDs = [];
+
+    user.topics.forEach(topic => {
+        userTopicIDs.push(topic.topicID),
+        userChoiceIDs.push(topic.choiceID)
+    });
 
     // sort createdAt -1 returns the latest documents since it orders them by descending order,
     // and the highest value is the latest on
-    let query = {topicID: { $in: user.topics.map(topic => topic.topicID) } }; // $nin means not in
-    let [topics, topicError] = await resolve( Topic.find(query).sort({ createdAt: -1}).limit(DOCUMENTS_PER_PAGE) );
+    let query = { topicID: { $in: userTopicIDs } }; 
+    let [topics, topicError] = await resolve( 
+        Topic
+            .find(query)
+            .select(['-_id', '-createdAt', '-updatedAt'])
+            .sort({ createdAt: 1})
+            .limit(DOCUMENTS_PER_PAGE) 
+        );
 
-    if (topicError) return response.status(400).send({ title: 'Error', message: 'Topic retrieval failed.' });
-    response.json({ topics });
+    if (topicError) return response.status(400).send({ title: 'TopicsNotFound', message: 'Topic retrieval failed.' });
+
+    let topicsWithAnswer = [];
+    
+    topics.forEach(topic => {
+        let indexOfTopic = userTopicIDs.indexOf(topic.topicID);
+        let currentChoiceID = userChoiceIDs[indexOfTopic];
+        let answer = topic.choices.find(choice => choice.choiceID == currentChoiceID).choiceValue;
+        topicsWithAnswer.push({ question: topic.question, answer });
+    });
+
+    response.json({ topics: topicsWithAnswer });
 });
 
 /**
@@ -42,17 +67,50 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
  */
 router.get('/topics/unanswered', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'Invalid User', message: 'This user does not exist' });
+    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
 
     // sort createdAt -1 returns the latest documents since it orders them by descending order,
     // and the highest value is the latest on
     let query = {topicID: { $nin: user.topics.map(topic => topic.topicID) } }; // $nin means not in
-    let [topics, topicError] = await resolve( Topic.find(query).sort({ createdAt: -1}).limit(DOCUMENTS_PER_PAGE) );
+    let [topics, topicError] = await resolve( 
+            Topic
+                .find(query)
+                .select(['-_id', 'topicID', 'question', 'choices'])
+                .sort({ createdAt: -1})
+                .limit(DOCUMENTS_PER_PAGE) 
+        );
 
-    if (topicError) return response.status(400).send({ title: 'Error', message: 'Topic retrieval failed.' });
+    if (topicError) return response.status(400).send({ title: 'TopicsNotFound', message: 'Topic retrieval failed.' });
     response.json({ topics });
 });
 
+/**
+ * This route is used to set a user's answer on a topic.
+ * Ofcourse it handles errors too.
+ */
+router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
+    let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
+    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+
+    let topicID, choiceID;
+
+    try {
+        ({ topicID, choiceID } = request.body);
+    } catch (error) {
+        return response.status(400).send({ title: 'InvalidOperation', message: 'Dude, wtf. Stop.' });
+    }
+    
+    let [topic, topicError] = await resolve( Topic.findOne({ topicID }) );
+    if (topicError) return response.status(400).send({ title: 'TopicNotFound', message: 'This topic does not exist.' });
+
+    let choiceFound = topic.choices.find(choice => choice.choiceID == choiceID);
+    if (!choiceFound) return response.status(400).send({ title: 'ChoiceNotFound', message: 'This choice does not exist.' });
+
+    user.topics.push({ topicID, choiceID });
+    await user.save();
+
+    response.json({ title: 'OpinionAdded', message: 'Successfully added opinion!' });
+});
 
 /**
  * Use to elegantly handle promises.

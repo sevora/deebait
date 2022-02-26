@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
 import DesktopNavigation from './DesktopNavigation.js';
@@ -24,18 +23,22 @@ class Dashboard extends Component {
 
     render() {
         return (
-            <Grid container>
-                <Grid item>
-                    <DesktopNavigation />
-                </Grid>
-                <Grid item>
-                    <Box m={2}>
-                        <Routes>
-                            <Route exact path="/" element={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                        </Routes>
-                    </Box>
-                </Grid>
-            </Grid>
+            <Box sx={{ display: 'flex' }}>
+                <DesktopNavigation sx={{
+                    display: { xs: 'none', md: 'unset' },
+                    width: 200,
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
+                        width: 200,
+                        boxSizing: 'border-box',
+                    }
+                }} />
+                <Box sx={{ flexGrow: 1, pt: 3 }} ml={3}>
+                    <Routes>
+                        <Route exact path="/" element={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
+                    </Routes>
+                </Box>
+            </Box>
         );
     }
 }

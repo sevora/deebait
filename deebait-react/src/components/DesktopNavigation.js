@@ -14,20 +14,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 
-function DesktopNavigation(props) {
+function DesktopNavigation({ sx={} }) {
     return (
-        <Drawer variant="permanent" anchor="left" 
-            sx={
-                {
-                    width: 240, 
-                    flexShrink: 0, 
-                    '& .MuiDrawer-paper': {
-                        width: 240,
-                        boxSizing: 'border-box',
-                    } 
-                }
-            }>
-            
+        <Drawer variant="permanent" anchor="left" sx={sx}>    
             <List>
                 <ListItem style={{justifyContent:'center'}}>
                     <Typography variant="h5">
