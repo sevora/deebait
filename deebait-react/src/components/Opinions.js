@@ -29,7 +29,12 @@ class Opinions extends Component {
     }
 
     onClickOpinion(answer) {
-        if (!answer) return;
+        let topicsUnanswered = this.state.topicsUnanswered.slice(1, this.state.topicsUnanswered.length);
+
+        if (!answer) {
+            this.setState({ topicsUnanswered });
+            return;
+        }
         
         let topic = this.state.topicsUnanswered[0];
         let topicID = topic.topicID;
@@ -38,7 +43,6 @@ class Opinions extends Component {
         axios.post(process.env.REACT_APP_API_URL + '/user/topics/unanswered/set', { topicID, choiceID }, { headers: this.props.headers })
         .then((response) => {
 
-            let topicsUnanswered = this.state.topicsUnanswered.filter((topic, index) => index !== 0);
             if (topicsUnanswered.length === 0) this.getUnansweredTopics();
 
             // todo: limit topicsAnswered to 30 items
