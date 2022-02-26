@@ -81,7 +81,7 @@ class Landing extends Component {
                         </PaperGridItem>
                     </Grid>
                 </Grid>
-                <Grid item container xs={12} md={4} p={2} backgroundColor="#7d7d7d" justifyContent="center" alignContent="center" sx={{ display: { xs: 'none', md: 'inherit' } }}>
+                <Grid item container xs={12} md={4} p={2} backgroundColor="#7d7d7d" justifyContent="center" alignContent="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
                     <Grid item>
                         <Box m={3}>
                             <Typography variant="body1" color="white">

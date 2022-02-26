@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import axios from 'axios';
 
-import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 
 import Landing from './Landing.js';
 import Dashboard from './Dashboard.js';
@@ -18,7 +18,6 @@ class Home extends Component {
         this.onSessionExpired = this.onSessionExpired.bind(this);
 
         this.state = {
-            token: null,
             headers: null,
 
             alertTitle: null,
@@ -34,9 +33,10 @@ class Home extends Component {
 
     onSuccessfulAuthentication(token) {
         localStorage.setItem('token', token);
+        let headers = { Authorization: `Bearer ${token}` };
 
         this.setState({ 
-            token, 
+            headers, 
             alertTitle: 'Success!',
             alertMessage: 'Succesful authentication via Twitter.',
             alertSeverity: 'success',
@@ -68,10 +68,10 @@ class Home extends Component {
             
             axios.get(process.env.REACT_APP_API_URL + '/user/check', { headers })
             .then(() => {
-                this.setState({ token, headers });
+                this.setState({ headers });
             }).catch((error) => {
                 localStorage.removeItem('token');
-                this.setState({ token: null, headers: {} });
+                this.setState({ headers: {} });
             });
 
             // otherwise clear localStorage
@@ -80,12 +80,13 @@ class Home extends Component {
 
     render() {
         return (
-            <Container>
+            <Grid>
                 <TemporaryAlert title={this.state.alertTitle} severity={this.state.alertSeverity} open={this.state.alertIsOpen} onClose={this.alertOnClose}>
                     {this.state.alertMessage}
                 </TemporaryAlert>
-                {this.state.token ? <Dashboard headers={this.state.headers} onSessionExpired={this.onSessionExpired} /> :  <Landing onSuccessfulAuthentication={this.onSuccessfulAuthentication} onUnsuccessfulAuthentication={this.onUnsuccessfulAuthentication} />}
-            </Container>
+                {/* Both dashboard and landing mess with each other's style somehow */}
+                {this.state.headers ? <Dashboard headers={this.state.headers} onSessionExpired={this.onSessionExpired} /> :  <Landing onSuccessfulAuthentication={this.onSuccessfulAuthentication} onUnsuccessfulAuthentication={this.onUnsuccessfulAuthentication} />}
+            </Grid>
         );
     }
 }

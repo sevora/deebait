@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const uuidv4 = require('uuid').v4;
-const uniqueValidator = require('mongoose-unique-validator');
 
 const { Schema } = mongoose;
 
@@ -35,3 +34,5 @@ const threadSchema = new Schema({
         }
     ]
 }, { timestamps: true });
+
+module.exports = mongoose.model('Thread', threadSchema, 'threads');
