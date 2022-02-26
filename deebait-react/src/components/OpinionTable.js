@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow';
 function OpinionTable({ width=800, entries=[{ question: 'Which do you prefer as a pet?', answer: 'Cat' }] }) {
     return (
         <TableContainer component={Paper} elevation={5}>
-            <Table sx={{ width }}>
+            <Table sx={{ maxWidth: width, minWidth: { 'md': width } }}>
             <TableHead>
                 <TableRow>
                     <TableCell>Question</TableCell>

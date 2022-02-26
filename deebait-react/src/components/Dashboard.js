@@ -33,7 +33,7 @@ class Dashboard extends Component {
                         boxSizing: 'border-box',
                     }
                 }} />
-                <Box sx={{ flexGrow: 1, pt: 3 }} ml={3}>
+                <Box sx={{ flexGrow: 1, pt: 3 }} ml={3} mr={3}>
                     <Routes>
                         <Route exact path="/" element={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
                     </Routes>
