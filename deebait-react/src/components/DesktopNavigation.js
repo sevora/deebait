@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import StyleIcon from '@mui/icons-material/Style';
@@ -15,6 +16,15 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 
 function DesktopNavigation({ sx={} }) {
+    let links = ['Opinions', 'Debate', 'Live', 'History', 'FAQ', 'Settings'];
+    let indexOfCurrentLink = links.indexOf(capitalizeFirstLetter(window.location.pathname.split('/')[1]));
+    let [selectedLinkIndex, setSelectedLinkIndex] = useState(indexOfCurrentLink);
+    let icons = [<StyleIcon />, <ForumIcon />, <VisibilityIcon />, <HistoryIcon />, <HelpIcon />, <SettingsIcon />];
+
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     return (
         <Drawer variant="permanent" anchor="left" sx={sx}>    
             <List>
@@ -23,36 +33,17 @@ function DesktopNavigation({ sx={} }) {
                         &#60;deebait&#47;&#62;
                     </Typography>
                 </ListItem>
-
-                <ListItem button key={"Opinions"} component={Link} to={'/'}>
-                    <ListItemIcon><StyleIcon /></ListItemIcon>
-                    <ListItemText primary={"Opinions"} />
-                </ListItem>
-
-                <ListItem button key={"Debate"} component={Link} to={'/debate'}>
-                    <ListItemIcon><ForumIcon /></ListItemIcon>
-                    <ListItemText primary={"Debate"} />
-                </ListItem>
-
-                <ListItem button key={"Watch Live"}>
-                    <ListItemIcon><VisibilityIcon /></ListItemIcon>
-                    <ListItemText primary={"Watch Live"} />
-                </ListItem>
-
-                <ListItem button key={"History"}>
-                    <ListItemIcon><HistoryIcon /></ListItemIcon>
-                    <ListItemText primary={"History"} />
-                </ListItem>
-
-                <ListItem button key={"FAQ"}>
-                    <ListItemIcon><HelpIcon /></ListItemIcon>
-                    <ListItemText primary={"FAQ"} />
-                </ListItem>
-
-                <ListItem button key={"Settings"}>
-                    <ListItemIcon><SettingsIcon /></ListItemIcon>
-                    <ListItemText primary={"Settings"} />
-                </ListItem>
+                {
+                    links.map((link, index) => {
+                        let url = '/' + link.toLowerCase();
+                        return (
+                            <ListItem button key={link} component={Link} onClick={() => setSelectedLinkIndex(index)} to={link === 'Opinions' ? '/' : url} selected={selectedLinkIndex === index}>
+                                <ListItemIcon>{icons[index]}</ListItemIcon>
+                                <ListItemText primary={link} />
+                            </ListItem>   
+                        )
+                    })
+                }
             </List>
         </Drawer>
     );

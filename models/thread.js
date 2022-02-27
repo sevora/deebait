@@ -14,16 +14,23 @@ const threadSchema = new Schema({
     },
     participantIDs: [
         {
-           type: String,
+            type: String,
             minLength: 1,
             maxLength: 300
         }
     ],
     messages: [
         {
-            type: String,
-            minLength: 1,
-            maxLength: 300
+            senderID: {
+                type: String,
+                minLength: 1,
+                maxLength: 300
+            },
+            messageValue: {
+                type: String,
+                minLength: 1,
+                maxLength: 300
+            }
         }
     ],
     reportedIDs: [
@@ -35,4 +42,6 @@ const threadSchema = new Schema({
     ]
 }, { timestamps: true });
 
+// a thread gets auto deleted after 48 hours
+threadSchema.index({ createdAt: 1 }, { expires: '48h' });
 module.exports = mongoose.model('Thread', threadSchema, 'threads');

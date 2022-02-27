@@ -15,7 +15,7 @@ program
     .version('0.1.0');
 
 program
-    .command('topic-add')
+    .command('add-topic')
     .description('Add a topic in the database.')
     .argument('<question>', 'The question at hand.')
     .argument('<choiceA>', 'The first choice.')

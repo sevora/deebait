@@ -28,7 +28,7 @@ const topicSchema =  new Schema({
                 type: String,
                 minLength: 1,
                 maxLength: 300,
-                default: uuidv4()
+                default: () => uuidv4()
             }
         }
     ]

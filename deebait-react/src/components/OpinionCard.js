@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 
 function OpinionCard({ question='Question here?', choiceA='Choice A', choiceB='Choice B', width=800, onClick=() => {return null;} }) {
     return (
-        <Card elevation={10} sx={{ maxWidth: width, marginRight: '24px' }}>
+        <Card elevation={10} sx={{ minWidth: { 'md': width }, marginRight: '10px' }}>
             <CardActionArea>
                 <CardContent>
                     <Typography variant="body1">
