@@ -70,8 +70,10 @@ class Home extends Component {
             .then(() => {
                 this.setState({ headers });
             }).catch((error) => {
-                localStorage.removeItem('token');
-                this.setState({ headers: {} });
+                if (error.response && error.response.data.title == 'InvalidUser') {
+                    localStorage.removeItem('token');
+                    this.setState({ headers: {} });
+                }
             });
 
             // otherwise clear localStorage
