@@ -6,7 +6,7 @@ class Debate extends Component {
         super(props);
 
         this.state = {
-            socket: io(process.env.REACT_APP_API_URL, {
+            socket: io(process.env.REACT_APP_API_URL + '/chat', {
                 withCredentials: true,
                 extraHeaders: {
                     // adding a custom header called headers

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import StyleIcon from '@mui/icons-material/Style';
 import ForumIcon from '@mui/icons-material/Forum';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import HistoryIcon from '@mui/icons-material/History';
 import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -16,10 +15,10 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 
 function DesktopNavigation({ sx={} }) {
-    let links = ['Opinions', 'Debate', 'Live', 'History', 'FAQ', 'Settings'];
+    let links = ['Opinions', 'Debate', 'History', 'FAQ', 'Settings'];
     let indexOfCurrentLink = links.indexOf(capitalizeFirstLetter(window.location.pathname.split('/')[1]));
     let [selectedLinkIndex, setSelectedLinkIndex] = useState(indexOfCurrentLink);
-    let icons = [<StyleIcon />, <ForumIcon />, <VisibilityIcon />, <HistoryIcon />, <HelpIcon />, <SettingsIcon />];
+    let icons = [<StyleIcon />, <ForumIcon />, <HistoryIcon />, <HelpIcon />, <SettingsIcon />];
 
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);

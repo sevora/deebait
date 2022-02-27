@@ -1,5 +1,6 @@
 // route for all logged-in user
 const router = require("express").Router();
+const { resolve } = require('./helper.js');
 const { decodeTokenMiddleware } = require('./decode-token.js');
 
 const DOCUMENTS_PER_PAGE = 30;
@@ -111,23 +112,6 @@ router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRe
 
     response.json({ title: 'OpinionAdded', message: 'Successfully added opinion!' });
 });
-
-/**
- * Use to elegantly handle promises.
- * @param {*} promise 
- * @returns 
- */
-async function resolve(promise) {
-    try {
-        const data = await promise;
-        if (data == null) {
-            return [null, new Error('NoSuchDocument')];
-        }
-        return [data, null];
-    } catch (error) {
-        return [null, error];
-    }
-}
 
 // Sample code for pagination
 // sexyModel.find()

@@ -36,8 +36,8 @@ const userControlsRouter = require('./routes/user-controls.js');
 app.use('/authentication', authenticationRouter);
 app.use('/user', userControlsRouter);
 
-io.on('connection', function(socket) {
-    require('./routes/socket.js')(socket, io);
+io.of('/chat').on('connection', function(socket) {
+    require('./routes/socket-chat.js')(socket, io);
 });
 
 server.listen(process.env.PORT || 80);

@@ -9,7 +9,6 @@ import DesktopNavigation from './DesktopNavigation.js';
 import MobileNavigation from './MobileNavigation.js';
 import Opinions from './Opinions.js';
 import Debate from './Debate.js';
-import Live from './Live.js';
 import History from './History.js';
 import FAQ from './FAQ.js';
 import Settings from './Settings.js';
@@ -49,7 +48,6 @@ class Dashboard extends Component {
                         <Routes>
                             <Route exact path="/" element={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
                             <Route exact path="/debate" element={<Debate headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                            <Route exact path="/live" element={<Live headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
                             <Route exact path="/history" element={<History headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
                             <Route exact path="/faq" element={<FAQ headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
                             <Route exact path="/settings" element={<Settings headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
