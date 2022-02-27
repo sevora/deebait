@@ -29,6 +29,12 @@ class Debate extends Component {
         });
 
     }
+
+    componentWillUnmount() {
+        // doesnt work
+        this.state.socket.disconnect();
+    }
+
     render() {
         return (
             <div></div>
