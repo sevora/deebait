@@ -1,6 +1,6 @@
 // route for all logged-in user
 const router = require("express").Router();
-const decodeTokenMiddleware = require('./decode-token.js');
+const { decodeTokenMiddleware } = require('./decode-token.js');
 
 const DOCUMENTS_PER_PAGE = 30;
 
@@ -14,7 +14,7 @@ const Thread = require('../models/thread.js');
  * and an error message if not.
  */
 router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
-    let [user, error] = await resolve( User.find({ userID: request.decoded.userID }) );
+    let [user, error] = await resolve( User.findOne({ userID: request.decoded.userID }) );
     if (error) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
     response.json({ title: 'Success', message: 'This user is valid!' });
 });
@@ -120,6 +120,9 @@ router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRe
 async function resolve(promise) {
     try {
         const data = await promise;
+        if (data == null) {
+            return [null, new Error('NoSuchDocument')];
+        }
         return [data, null];
     } catch (error) {
         return [null, error];

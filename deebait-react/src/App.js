@@ -6,14 +6,16 @@ import '@fontsource/roboto/700.css';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import CssBaseline from '@mui/material/CssBaseline';
 import createTheme from '@mui/material/styles/createTheme';
 import responsiveFontSizes from '@mui/material/styles/responsiveFontSizes'
-import { ThemeProvider } from '@mui/private-theming';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
 
+import themeOptions from './Theme.js';
 import Home from './components/Home.js';
 import Footer from './components/Footer.js';
 
-let theme = createTheme();
+let theme = createTheme(themeOptions);
 theme = responsiveFontSizes(theme);
 
 function App() {
@@ -42,6 +44,7 @@ function App() {
         </Helmet>
       </HelmetProvider>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <Home />
         <Footer />
       </ThemeProvider>

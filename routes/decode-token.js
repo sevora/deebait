@@ -1,6 +1,15 @@
 // middleware for jsonwebtoken support in header
 const jwt = require('jsonwebtoken');
 
+function decodeToken(token, callback) {
+    jwt.verify(token, process.env.JWT_SECRET, function(error, decoded) {
+        if (error) {
+            return callback(error, null);
+        }
+        callback(null, decoded);
+    });   
+}
+
 function decodeTokenMiddleware(request, response, next) {
     let token;
     request.decoded = {}
@@ -12,7 +21,7 @@ function decodeTokenMiddleware(request, response, next) {
         return next();
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, function(error, decoded) {
+    decodeToken(token, function(error, decoded) {
         if (error) {
             request.decoded.error = error;
             
@@ -27,4 +36,4 @@ function decodeTokenMiddleware(request, response, next) {
     });
 }
 
-module.exports = decodeTokenMiddleware;
+module.exports = { decodeToken, decodeTokenMiddleware };

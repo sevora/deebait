@@ -5,8 +5,8 @@ import CodeIcon from '@mui/icons-material/Code';
 
 function Footer() {
     return (
-        <Grid container direction="row" width="100%" justifyContent="center" alignItems="center" mt={1}>
-            <Grid item>
+        <Grid container direction="row" width="100%" justifyContent="center" alignItems="center" spacing={1} mt={1}>
+            <Grid item sx={{lineHeight: '5px'}}>
                 <CodeIcon/>
             </Grid>
             <Grid item>
