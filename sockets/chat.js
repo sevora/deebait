@@ -62,6 +62,13 @@ function onConnectIO(socket, io) {
 }
 
 class ChatConnection extends Connection {
+    constructor(key, document, sockets) {
+        super(sockets);
+        
+        this.key = key;
+        this.document = document;
+    }
+
     deleteInstance() {
         delete connections[this.key];
     }
