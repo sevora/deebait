@@ -1,5 +1,10 @@
 import { Component } from 'react';
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
+
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+
+import SendButton from './SendButton.js';
 
 class Debate extends Component {
     constructor(props) {
@@ -27,16 +32,16 @@ class Debate extends Component {
         });
 
         this.socket.on('connect', (data) => {
-            console.log('[1] I got connected!');
+            
         });  
 
         this.socket.on('has-partner', (data) => {
-           console.log('[2] I found a partner');
+           
         });
 
         this.socket.on('partner-left', (data) => {
-            console.log('[3] Yo my partner left');
-         });
+           
+        });
     }
 
     componentWillUnmount() {
@@ -46,7 +51,17 @@ class Debate extends Component {
 
     render() {
         return (
-            <div></div>
+            <Box>
+                <Box sx={{height: '70vh'}}>
+
+                </Box>
+                <TextField 
+                    style={{borderRadius: '100px'}}
+                    placeholder="Enter message here..." 
+                    InputProps={{ endAdornment: <SendButton />}}
+                    fullWidth
+                />
+            </Box>
         );
     }
 }

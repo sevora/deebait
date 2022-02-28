@@ -13,10 +13,10 @@ let matchQueue = [];
 /**
  * Comment this code below if unnecessary anymore, just parses crap
  */
-setInterval(function() {
-    console.log(`No. of users connected: ${Object.keys(connections).length}`);
-    console.log(`No. of connections: ${Object.values(connections).map(connection => connection.sockets.length).join(', ')}`);
-}, 500); 
+// setInterval(function() {
+//     console.log(`No. of users connected: ${Object.keys(connections).length}`);
+//     console.log(`No. of connections: ${Object.values(connections).map(connection => connection.sockets.length).join(', ')}`);
+// }, 500); 
 
 /**
  * This is used as a callback inside io.on('connection') and it should receive the
@@ -53,12 +53,9 @@ function onConnectIO(socket, io) {
             connections[user.userID] = new ChatConnection(user.userID, user, [socket]);
             connection = connections[user.userID]   
             await connection.findPartner();
-            if (connection.partner) console.log(`[${connection.key}] HAS PARTNER [1]`);
         }
 
-        if (connection.partner) console.log(`[${connection.key}] HAS PARTNER [2]`);
         connection.addSocket(socket);
-        if (connection.partner) console.log(`[${connection.key}] HAS PARTNER [4]`);
     });
 }
 
@@ -86,15 +83,13 @@ class ChatConnection extends Connection {
         } else {
             this.partner.emit('partner-left');
             delete connections[this.partner.key];
-            console.log(`${this.key} has left partner ${this.partner.key}`);
         } 
 
         delete connections[this.key];
     }
 
     onRegisterSocket(socket) {
-        if (this.partner) console.log(`[${this.key}] HAS PARTNER [3]`);
-
+        
         if (this.partner) { 
             socket.emit('has-partner');
             this.partner.emit('has-partner');

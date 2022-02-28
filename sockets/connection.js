@@ -28,6 +28,7 @@ class Connection {
             index = this.sockets.length-1;  
         } 
 
+        // idk if this is right, but it is working lol
         this.onRegisterSocket(this.sockets[index]);
     }
 
