@@ -1,6 +1,6 @@
 // route for all logged-in user
 const router = require("express").Router();
-const { resolve } = require('./helper.js');
+const { resolve } = require('../helper.js');
 const { decodeTokenMiddleware } = require('./decode-token.js');
 
 const DOCUMENTS_PER_PAGE = 30;
