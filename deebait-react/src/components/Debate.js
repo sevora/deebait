@@ -27,15 +27,15 @@ class Debate extends Component {
         });
 
         this.socket.on('connect', (data) => {
-            console.log('Yo I got connected!');
+            console.log('[1] I got connected!');
         });  
 
         this.socket.on('has-partner', (data) => {
-           console.log('Yo I found a partner');
+           console.log('[2] I found a partner');
         });
 
-        this.socket.on('has-left', (data) => {
-            console.log('Yo my partner left me...');
+        this.socket.on('partner-left', (data) => {
+            console.log('[3] Yo my partner left');
          });
     }
 

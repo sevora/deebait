@@ -20,10 +20,15 @@ class Connection {
      * @param {*} socket 
      */
     addSocket(socket) {
-        if (this.sockets.map(socket => socket.id).indexOf(socket.id) == -1) {
-            socket.on('disconnect', (reason) => this.socketDisconnectHandler.bind(this)(reason, socket));
+        let index = this.sockets.map(socket => socket.id).indexOf(socket.id);
+        
+        if (index == -1) {
+            socket.on('disconnect', (reason) => this.onSocketDisconnect.bind(this)(reason, socket));
             this.sockets.push(socket);
-        }
+            index = this.sockets.length-1;  
+        } 
+
+        this.onRegisterSocket(this.sockets[index]);
     }
 
     /**
@@ -38,20 +43,20 @@ class Connection {
      * @param {*} reason 
      * @param {*} socket 
      */
-    socketDisconnectHandler(reason, socket) {
+    onSocketDisconnect(reason, socket) {
         for (let index = this.sockets.length-1; index >= 0; --index) {
             if (this.sockets[index].id == socket.id) this.sockets.splice(index, 1);
         }
 
         if (this.sockets.length == 0) {
-            this.deleteInstance();
+            this.onEmptySockets();
         }
     }
 
     /**
      * 
      */
-    deleteInstance() { 
+    onEmptySockets() { 
         // define me  
     }
 
@@ -60,7 +65,7 @@ class Connection {
      * @param {*} socket 
      * @param {*} io 
      */
-    registerEventHandlers(socket, io) {
+    onRegisterSocket(socket) {
         // define me
     }
 }
