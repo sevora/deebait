@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "npx nodemon ./server.js"
+    "start": "npx nodemon ./server.js --ignore deebait-react/"
   },
   "author": "Ralph Louis Gopez",
   "license": "UNLICENSED",

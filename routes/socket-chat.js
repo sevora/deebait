@@ -1,5 +1,4 @@
-// register socket as a user
-// 
+// rewrote everything to handle multiple sockets for a single user
 const User = require('../models/user.js');
 const Topic = require('../models/topic.js');
 const Thread = require('../models/thread.js');
@@ -7,182 +6,132 @@ const Thread = require('../models/thread.js');
 const { resolve } = require('./helper.js');
 const { decodeToken } = require('./decode-token');
 
-let matchQueue = [];
-let userIDToUserSocket = {};
+let connections = {};
 
-setInterval(function() {
-    console.log(Object.values(userIDToUserSocket).length);
-}, 1000);
+/**
+ * Comment this code below if unnecessary anymore, just parses crap
+ */
+// setInterval(function() {
+//     console.log(`No. of users connected: ${Object.keys(connections).length}`);
+//     console.log(`No. of connections: ${Object.values(connections).map(connection => connection.sockets.length).join(', ')}`);
+// }, 500);
 
+/**
+ * This is used as a callback inside io.on('connection') and it should receive the
+ * incoming socket and io. Here's how this works:
+ * 1. User finds match or gets into queue
+ * 2. Connection (both partners) gets alerted to the right state
+ * 3. If connection ends by one, alert the other that they're no longer connected
+ * 4. Save the whole message
+ * @param socket 
+ * @param io 
+ * @returns 
+ */
 function onConnectIO(socket, io) {
     let token;
 
     try {
         token = parseHeaderToToken(socket.handshake.headers['deebaitheader']);
     } catch(error) {
+        console.log(error)
         socket.disconnect();
     }
 
     if (!token) return;
 
-    decodeToken(token, async function(error, decoded) {
+    decodeToken(token, async (error, decoded) => {
         if (error) return socket.disconnect();
-        
         let [user, userError] = await resolve( User.findOne({ userID: decoded.userID }) );
-        if (userError) return socket.disconnect();
+        if (userError || user.isBanned) return socket.disconnect();
 
-        let { userID } = user;
+        // create connection to user
+        let connection = connections[user.userID];
 
-        if (!userIDToUserSocket[userID]) {
-            let userSocket = new UserSocket(user, socket);
-            userIDToUserSocket[userID] = userSocket;
-            userSocket.findPartnerInQueue();
-            userSocket.registerSocketEvents();
+        if (!connection) {
+            connections[user.userID] = new Connection(user.userID, user, [socket]);
+            connection = connections[user.userID]
         }
+        
+        // need to update document to latest user still
+        connection.document = user;
+
+        connection.addSocket(socket);
+        connection.registerEventHandlers(socket, io);
     });
 }
 
-class UserSocket {
-    constructor(document, socket) {
+class Connection {
+    constructor(key, document, sockets) {
+        this.key = key;
         this.document = document;
-        this.socket = socket;
+        this.sockets = [];
 
-        this.partner = null;
-        this.topics = null;
-        this.answers = null;
+        sockets.forEach(socket => {
+            this.addSocket(socket);
+        });
     }
 
-    getDocument() {
-        return this.document;
+    addSocket(socket) {
+        if (this.sockets.map(socket => socket.id).indexOf(socket.id) == -1) {
+            socket.on('disconnect', (reason) => this.socketDisconnectHandler.bind(this)(reason, socket));
+            this.sockets.push(socket);
+        }
     }
 
-    async findPartnerInQueue() {
-        if (matchQueue.length == 0) {
-            matchQueue.push(this);
-            return null;
+    emit(title, data) {
+        this.sockets.forEach(socket => {
+            socket.emit(title, data);
+        });
+    }
+
+    socketDisconnectHandler(reason, socket) {
+        // console.log(`Connected ID: ${this.document.userID} Removed: ${socket.id}`);
+
+        for (let index = this.sockets.length-1; index >= 0; --index) {
+            if (this.sockets[index].id == socket.id) this.sockets.splice(index, 1);
         }
 
-        let mapTopicID = topic => topic.topicID;
-        let mapChoiceID = topic => topic.choiceID;
-
-        let topics = this.getDocument().topics;
-        let topicsIDs = topics.map(mapTopicID);
-        let choiceIDs = topics.map(mapChoiceID);
-
-        for (let index = matchQueue.length - 1; index >= 0; --index) {
-            let otherTopics = matchQueue[index].getDocument().topics;
-
-            let otherTopicsIDs = otherTopics.map(mapTopicID);
-            let sameTopicsIDs = commonElements(topicsIDs, otherTopicsIDs);
-            
-            let [sameTopics, sameTopicsError] = await resolve(Topic.find({ topicID: { $in: sameTopicsIDs }}) );
-            if (sameTopicsError) continue;   
-            let otherChoiceIDs = otherTopics.map(mapChoiceID);
-
-            let answers = sameTopics.map(topic => {
-                let index = topicsIDs.indexOf(topic.topicID);
-                let choiceID = choiceIDs[index];
-                return topic.choices.find(choice => choice.choiceID == choiceID).choiceValue;
-            });
-
-            let otherAnswers = sameTopics.map(topic => {
-                let index = otherTopicsIDs.indexOf(topic.topicID);
-                let choiceID = otherChoiceIDs[index];
-                return topic.choices.find(choice => choice.choiceID == choiceID).choiceValue;
-            });
-            
-            let disagreeCount = sameTopics.length - commonElements(answers, otherAnswers).length;
-
-            if (disagreeCount > 0) {
-                // set the partners correctly
-                this.partner = matchQueue[index];
-                this.partner.partner = this;
-
-                // set the topics correctly
-                this.topics = sameTopics;
-                this.partner.topics = sameTopics;
-                
-                // set the answers correctly
-                this.answers = answers;
-                this.partner.answers = otherAnswers;
-
-                matchQueue.splice(index, 1);
-                return this.partner;
-            }
+        if (this.sockets.length == 0) {
+            delete connections[this.key];
         }
+    }
+
+    registerEventHandlers(socket, io) {
+        // console.log(`Connected ID: ${this.document.userID}\nfrom ${socket.id}`);
         
-        matchQueue.push(this);
-        return null;
-    }
-
-    getPartnerAnswers() {
-        if (!this.partner) return null;
-        return this.partner.answers;
-    }
-
-    getConflictingAnswers() {
-        let conflicting = [];
-        if (this.answers) this.answers.forEach((answer, index) => {
-            if (this.partner.answers[index] != answer) {
-                conflicting.push({ question: this.topics[index].question, answer: this.partner.answers[index] });
-            }
+        socket.on('message', (data) => {
+            // only send message to partner if they have one
+            // add message in current thread
         });
-        return conflicting;
-    }
 
-    unsetPartner() {
-        if (this.partner) this.partner.unsetPartner();
-        this.partner = null;
-        this.topic = null;
-        this.answers = null;
-    }
-
-    registerSocketEvents() {
-        // send to assigned partner
-        // update db
-        this.socket.on('message', async function(data) {
-            
+        // tell their partner that they have no more partner
+        // also save to db if it hasn't been saved yet
+        socket.on('disconnect', () => {
             
         });
 
-        this.socket.on('disconnect', (reason) => {
-            // unpair and remove both
-            let userID = this.getDocument().userID;
-            delete userIDToUserSocket[userID];
-            matchQueue = matchQueue.filter(userSocket => userSocket.getDocument().userID != userID);
-            this.unsetPartner();
+        // make server add them to queue again
+        socket.on('find-match', () => {
 
-            console.log('disconnect', reason);
         });
 
-        // if there is a partner 
-        // emit to both an event that says they have a partner
-    }
-}
+        // set the thread to report their partner for abusing
+        socket.on('report-partner', () => {
 
-// input of type String: {"Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiJmNTRhY2M1OC1mZmJjLTQxY2ItOTAwMy1iNmQ5NDZiNDA2NGUiLCJpYXQiOjE2NDU5NTE5MzEsImV4cCI6MTY0NjAzODMzMX0.PymRdyH2HKelultvwa-s3acgtr-xpBVS9tsJS8f5GAU"}
-// output of type String: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiJmNTRhY2M1OC1mZmJjLTQxY2ItOTAwMy1iNmQ5NDZiNDA2NGUiLCJpYXQiOjE2NDU5NTE5MzEsImV4cCI6MTY0NjAzODMzMX0.PymRdyH2HKelultvwa-s3acgtr-xpBVS9tsJS8f5GAU
-function parseHeaderToToken(string) {
-    let object = JSON.parse(string);
-    return object['Authorization'].split(' ')[1];
+        });
+
+    }
+
 }
 
 /**
- * Literally finds the common elements of two arras
- * @param {*} array1 
- * @param {*} array2 
- * @returns 
+ * Parses token from header
+ * @param {String} string 
+ * @returns String with headers
  */
-function commonElements(array1, array2) {
-    let result = [];
-
-    array1.forEach(x => {
-        array2.forEach(y => {
-            if (x == y) result.push(x);
-        });
-    });
-
-    return result;
+ function parseHeaderToToken(string) {
+    let object = JSON.parse(string);
+    return object['Authorization'].split(' ')[1];
 }
 
 module.exports = onConnectIO;
