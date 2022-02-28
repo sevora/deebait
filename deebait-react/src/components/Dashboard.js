@@ -54,7 +54,7 @@ class Dashboard extends Component {
                         </Routes>
                     </Box>
                 </Box>
-                <Paper elevation={10} sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: { sx: 'block', md: 'none' } }} >
+                <Paper variant="outlined" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: { sx: 'block', md: 'none' } }} >
                     <MobileNavigation />
                 </Paper>
             </Box>

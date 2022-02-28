@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 
 function BrandBar() {
     return (
-        <AppBar position="relative" color="inherit">
+        <AppBar position="relative" color="inherit" elevation={1}>
             <Toolbar variant="dense">
                 <Typography variant="h6">&#60;deebait&#47;&#62;</Typography>
             </Toolbar>
