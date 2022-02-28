@@ -6,14 +6,10 @@ class Debate extends Component {
         super(props);
 
         this.state = {
-            socket: io(process.env.REACT_APP_API_URL + '/chat', {
-                withCredentials: true,
-                extraHeaders: {
-                    // adding a custom header called headers
-                    deebaitheader: JSON.stringify(this.props.headers)
-                }
-            })
+            messages: []
         }
+
+        this.socket = null;
     }
 
     static defaultProps = {
@@ -22,17 +18,30 @@ class Debate extends Component {
     }
 
     componentDidMount() {
-        let { socket } = this.state;
-
-        socket.on('connect', function() {
-            socket.send('Hi!');
+        this.socket = io(process.env.REACT_APP_API_URL + '/chat', {
+            withCredentials: true,
+            extraHeaders: {
+                // adding a custom header called headers
+                deebaitheader: JSON.stringify(this.props.headers)
+            }
         });
 
+        this.socket.on('connect', (data) => {
+            console.log('Yo I got connected!');
+        });  
+
+        this.socket.on('has-partner', (data) => {
+           console.log('Yo I found a partner');
+        });
+
+        this.socket.on('has-left', (data) => {
+            console.log('Yo my partner left me...');
+         });
     }
 
     componentWillUnmount() {
-        // doesnt work
-        this.state.socket.disconnect();
+        this.socket.disconnect();
+        this.socket = null;
     }
 
     render() {
