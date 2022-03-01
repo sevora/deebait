@@ -12,6 +12,7 @@ class Home extends Component {
         super(props);
 
         this.alertOnClose = this.alertOnClose.bind(this);
+        this.onCallAlert = this.onCallAlert.bind(this);
 
         this.onSuccessfulAuthentication = this.onSuccessfulAuthentication.bind(this);
         this.onUnsuccessfulAuthentication = this.onUnsuccessfulAuthentication.bind(this);
@@ -57,6 +58,15 @@ class Home extends Component {
 
     }
 
+    onCallAlert({ title, text, severity }) {
+        this.setState({
+            alertTitle: title,
+            alertMessage: text,
+            alertSeverity: severity,
+            alertIsOpen: true
+        });
+    }
+
     componentDidMount() {
         let token = localStorage.getItem('token');
         let headers = {};
@@ -70,7 +80,7 @@ class Home extends Component {
             .then(() => {
                 this.setState({ headers });
             }).catch((error) => {
-                if (error.response && error.response.data.title == 'InvalidUser') {
+                if (error.response && error.response.data.title === 'InvalidUser') {
                     localStorage.removeItem('token');
                     this.setState({ headers: {} });
                 }
@@ -87,7 +97,7 @@ class Home extends Component {
                     {this.state.alertMessage}
                 </TemporaryAlert>
                 {/* Both dashboard and landing mess with each other's style somehow */}
-                {this.state.headers ? <Dashboard headers={this.state.headers} onSessionExpired={this.onSessionExpired} /> :  <Landing onSuccessfulAuthentication={this.onSuccessfulAuthentication} onUnsuccessfulAuthentication={this.onUnsuccessfulAuthentication} />}
+                {this.state.headers ? <Dashboard headers={this.state.headers} onSessionExpired={this.onSessionExpired} onAlert={this.onCallAlert} /> :  <Landing onSuccessfulAuthentication={this.onSuccessfulAuthentication} onUnsuccessfulAuthentication={this.onUnsuccessfulAuthentication} />}
             </Grid>
         );
     }
