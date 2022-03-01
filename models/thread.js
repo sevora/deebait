@@ -32,13 +32,6 @@ const threadSchema = new Schema({
                 maxLength: 300
             }
         }
-    ],
-    reportedIDs: [
-        {
-            type: String,
-            minLength: 1,
-            maxLength: 300
-        }
     ]
 }, { timestamps: true });
 
