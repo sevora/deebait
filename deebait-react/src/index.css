@@ -13,7 +13,11 @@ code {
 }
 
 div.MuiOutlinedInput-root{
-  border-radius: 90px !important;
+  border-radius: 40px !important;
+}
+
+div.MuiInputBase-adornedStart button span {
+  margin: 0px !important;
 }
 
 ::-webkit-scrollbar {
