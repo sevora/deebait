@@ -3,9 +3,9 @@ import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 
 
-function SendButton() {
+function SendButton({ onClick = function() {return null;} }) {
     return (
-        <Button endIcon={<SendIcon/>}>Send</Button>
+        <Button onClick={onClick} endIcon={<SendIcon/>}>Send</Button>
     );
 }
 

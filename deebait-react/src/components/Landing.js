@@ -23,7 +23,7 @@ class Landing extends Component {
 
     static defaultProps = {
         onSuccessfulAuthentication: function() { return null },
-        onUnsuccessfulAuthentication: function() { return null }
+        onUnsuccessfulAuthentication: function() { return null },
     }
 
     buttonOnClick() {

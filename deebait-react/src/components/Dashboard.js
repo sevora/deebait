@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -25,7 +25,8 @@ class Dashboard extends Component {
 
     static defaultProps = {
         headers: {},
-        onSessionExpired: function() { return null }
+        onSessionExpired: function() { return null },
+        onAlert: function() { return null }
     }
 
     render() {
@@ -45,13 +46,13 @@ class Dashboard extends Component {
                         <BrandBar />
                     </Box>
                     <Box ml={3} mr={3} pt={3}>
-                        <Routes>
-                            <Route exact path="/" element={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                            <Route exact path="/debate" element={<Debate headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                            <Route exact path="/history" element={<History headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                            <Route exact path="/faq" element={<FAQ headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                            <Route exact path="/settings" element={<Settings headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} />}></Route>
-                        </Routes>
+                        <Switch>
+                            <Route exact path="/" children={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
+                            <Route exact path="/debate" children={<Debate headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
+                            <Route exact path="/history" children={<History headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
+                            <Route exact path="/faq" children={<FAQ headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
+                            <Route exact path="/settings" children={<Settings headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
+                        </Switch>
                     </Box>
                 </Box>
                 <Paper variant="outlined" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: { sx: 'block', md: 'none' } }} >
