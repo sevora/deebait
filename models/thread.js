@@ -32,9 +32,9 @@ const threadSchema = new Schema({
                 maxLength: 300
             }
         }
-    ]
+    ],
 }, { timestamps: true });
 
-// a thread gets auto deleted after 48 hours
-threadSchema.index({ createdAt: 1 }, { expires: '48h' });
+// a thread gets auto deleted after 7 days
+threadSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 7 });
 module.exports = mongoose.model('Thread', threadSchema, 'threads');

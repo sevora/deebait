@@ -7,12 +7,8 @@ class Connection {
      * 
      * @param {*} sockets 
      */
-    constructor(sockets) {
-        this.sockets = [];
-
-        sockets.forEach(socket => {
-            this.addSocket(socket);
-        });
+    constructor() {
+        this.sockets = {};
     }
 
     /**
@@ -20,16 +16,11 @@ class Connection {
      * @param {*} socket 
      */
     addSocket(socket) {
-        let index = this.sockets.map(socket => socket.id).indexOf(socket.id);
-        
-        if (index == -1) {
-            socket.on('disconnect', (reason) => this.onSocketDisconnect.bind(this)(reason, socket));
-            this.sockets.push(socket);
-            index = this.sockets.length-1;  
-        } 
-
-        // idk if this is right, but it is working lol
-        this.onRegisterSocket(this.sockets[index]);
+        if (!this.sockets[socket.id]) {
+            this.sockets[socket.id] = socket;
+            this.sockets[socket.id].on('disconnect', (reason) => this.onSocketDisconnect(reason, socket));
+            this.onRegisterSocket(this.sockets[socket.id]);
+        }
     }
 
     /**
@@ -37,7 +28,9 @@ class Connection {
      * @param {*} title 
      * @param {*} data 
      */
-    emit(title, data) { this.sockets.forEach(socket => { socket.emit(title, data); }); }
+    emit(title, data) { 
+        Object.values(this.sockets).forEach(socket => { socket.emit(title, data); }); 
+    }
 
     /**
      * 
@@ -45,30 +38,28 @@ class Connection {
      * @param {*} socket 
      */
     onSocketDisconnect(reason, socket) {
-        for (let index = this.sockets.length-1; index >= 0; --index) {
-            if (this.sockets[index].id == socket.id) this.sockets.splice(index, 1);
-        }
+        delete this.sockets[socket.id];
 
-        if (this.sockets.length == 0) {
+        if (Object.keys(this.sockets).length == 0) {
             this.onEmptySockets();
         }
     }
 
-    /**
-     * 
-     */
-    onEmptySockets() { 
-        // define me  
-    }
+    // /**
+    //  * 
+    //  */
+    // onEmptySockets() { 
+    //     // define me  
+    // }
 
-    /**
-     * 
-     * @param {*} socket 
-     * @param {*} io 
-     */
-    onRegisterSocket(socket) {
-        // define me
-    }
+    // /**
+    //  * 
+    //  * @param {*} socket 
+    //  * @param {*} io 
+    //  */
+    // onRegisterSocket(socket) {
+    //     // define me
+    // }
 }
 
 module.exports = Connection;
