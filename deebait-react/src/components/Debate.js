@@ -18,7 +18,7 @@ class Debate extends Component {
         super(props);
 
         this.state = {
-            // differences: [{partnerChoice: 'Cats', yourChoice: 'Dogs'}],
+            // differences: [{partnerAnswer: 'Cats', answer: 'Dogs'}],
             // messages: [{value: 'Hi', sender: 'user'}],
             differences: [],
             messages: [],
@@ -30,6 +30,7 @@ class Debate extends Component {
         }
 
         this.onInputChange = this.onInputChange.bind(this);
+        this.onClickEnter = this.onClickEnter.bind(this);
         this.onSendMessage = this.onSendMessage.bind(this);
         this.onEndConnection = this.onEndConnection.bind(this);
         this.onReconnect = this.onReconnect.bind(this);
@@ -44,12 +45,21 @@ class Debate extends Component {
     }
 
     onInputChange(event) {
-        this.setState({ inputValue: event.target.value });
+        if (event.target.value.length <= 250) {
+            this.setState({ inputValue: event.target.value, sureEnd: false });
+        }
+    }
+
+    onClickEnter(event) {
+        if (event.charCode === 13) {
+            this.onSendMessage();
+        }
     }
 
     onSendMessage() {
-        // uwu on send
-        this.setState({ sureEnd: false });
+        if (this.state.connected && !this.state.onQueue) {
+            this.socket.emit('send-to-partner', { message: this.state.inputValue });
+        }
     }
 
     onReconnect() {
@@ -79,17 +89,28 @@ class Debate extends Component {
         });
 
         this.socket.on('connect', (data) => {
-            this.setState({ connected: true, onQueue: true });
+            this.setState({ differences: [], messages: [], connected: true, onQueue: true });
         });
 
         this.socket.on('has-partner', (data) => {
-            // this.setState({ differences: data.differences, onQueue: false });
-            this.setState({ connected: true, onQueue: false });
+            this.setState({ differences: data.differences, onQueue: false, connected: true });
         });
 
+        this.socket.on('has-message', (data) => {
+            let messages = this.state.messages.concat([{ value: data.message, sender: 'partner' }]);
+            this.setState({ messages });
+        });
+
+        this.socket.on('was-sent-to-partner', (data) => {
+            let messages = this.state.messages.concat([{ value: data.message, sender: 'user' }]);
+            this.setState({ messages, inputValue: '' });
+        });
+        
         this.socket.on('partner-left', (data) => {
+            this.socket.disconnect();
             this.setState({ connected: false, disconnectMessage: 'Your deeb match has left' });
         });
+        // add is typing thing
     }
 
     componentWillUnmount() {
@@ -104,7 +125,7 @@ class Debate extends Component {
                     <Loader visible={this.state.onQueue} />
 
                     {this.state.differences.map((difference, index) => {
-                        return <DebateQuip key={'quip'+index} partnerChoice={difference.partnerChoice} userChoice={difference.userChoice}/>
+                        return <DebateQuip key={'quip'+index} question={difference.question} partnerChoice={difference.partnerAnswer} yourChoice={difference.answer}/>
                     })}
 
                     {this.state.messages.map((message, index) => {
@@ -121,6 +142,7 @@ class Debate extends Component {
                     disabled={this.state.onQueue}
                     value={this.state.inputValue}
                     onChange={this.onInputChange}
+                    onKeyPress={this.onClickEnter}
                     placeholder="Enter message here..." 
                     InputProps={{ startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue} />, endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue} />}}
                     fullWidth

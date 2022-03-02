@@ -67,14 +67,14 @@ class Landing extends Component {
                             Debate about various issues and topics at hand,
                             and learn from or teach others. The community is 
                             well-moderated and bots, trolls or spammers are banned.
-                            All message threads are deleted after 48 hours of their 
+                            All message threads are deleted after 7 days of their
                             creation.
                         </PaperGridItem>
                         <PaperGridItem xs={12} md={7} elevation={3} p={3}>
                             <AlignTextIcon variant="h5" icon={<SportsMartialArtsIcon />}>Refreshing</AlignTextIcon>
-                            Everyone debates here by taking turns, this means 
-                            that everyone gets a chance to express their views
-                            without getting spammed a wall of text to oblivion.
+                            Tired of having shallow conversations? Or having thirsty people trying to hook up with you
+                            out of nowhere even though you're clearly not interested. You're in luck, cause this isn't 
+                            a flirting site.
                         </PaperGridItem>
                         <PaperGridItem xs={12} md={5} elevation={3} p={3}>
                             <AlignTextIcon variant="h5" icon={<InsertEmoticonIcon />}>Fun</AlignTextIcon>

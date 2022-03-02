@@ -1,4 +1,6 @@
 // rewrote everything to handle multiple sockets for a single user
+const runes = require('runes');
+
 const User = require('../models/user.js');
 const Topic = require('../models/topic.js');
 const Thread = require('../models/thread.js');
@@ -15,7 +17,7 @@ let matchQueue = [];
  */
 // setInterval(function() {
 //     console.log(`No. of users connected: ${Object.keys(connections).length}`);
-//     console.log(`No. of connections: ${Object.values(connections).map(connection => connection.sockets.length).join(', ')}`);
+//     console.log(`No. of connections: ${Object.values(connections).map(connection => Object.keys(connection.sockets).length).join(', ')}`);
 // }, 500); 
 
 /**
@@ -50,7 +52,7 @@ function onConnectIO(socket, io) {
         let connection = connections[user.userID];
 
         if (!connection) {
-            connections[user.userID] = new ChatConnection(user.userID, user, [socket]);
+            connections[user.userID] = new ChatConnection(user.userID, user);
             connection = connections[user.userID]   
             await connection.findPartner();
         }
@@ -60,8 +62,8 @@ function onConnectIO(socket, io) {
 }
 
 class ChatConnection extends Connection {
-    constructor(key, document, sockets) {
-        super(sockets);
+    constructor(key, document) {
+        super();
         
         this.key = key;
         this.document = document;
@@ -89,10 +91,19 @@ class ChatConnection extends Connection {
     }
 
     onRegisterSocket(socket) {
-        
+        socket.on('send-to-partner', data => {
+            let message = data ? data.message : null;
+
+            if (this.partner && message) {
+                message = message.trim().substring(0, 250);
+                socket.emit('was-sent-to-partner', { message });
+                this.partner.emit('has-message', { message });
+            }
+        });
+
         if (this.partner) { 
-            socket.emit('has-partner');
-            this.partner.emit('has-partner');
+            socket.emit('has-partner', { differences: this.getConflictingAnswers() });
+            this.partner.emit('has-partner', { differences: this.partner.getConflictingAnswers() });
         }
     }
 
@@ -155,6 +166,16 @@ class ChatConnection extends Connection {
 
         matchQueue.push(this);
         this.queued = true;        
+    }
+
+    getConflictingAnswers() {
+        let conflicting = [];
+        if (this.answers) this.answers.forEach((answer, index) => {
+            if (this.partner.answers[index] != answer) {
+                conflicting.push({ question: this.topics[index].question, answer, partnerAnswer: this.partner.answers[index] });
+            }
+        });
+        return conflicting;
     }
 }
 
