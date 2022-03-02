@@ -9,10 +9,22 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 
 function MobileNavigation() {
-    const [activeLink, setActiveLink] = useState('/' + window.location.pathname.split('/')[1]);
+    const [activeLink, setActiveLink] = useState( getCurrentPath() );
+
+    function getCurrentPath() {
+        return '/' + window.location.pathname.split('/')[1]
+    }
 
     function handleChangeLink(event, newLink) {
+        let pastLink = activeLink;
         setActiveLink(newLink);
+        
+        // prevents activating the wrong link
+        setTimeout(() => {
+            if (getCurrentPath() !== newLink) {
+                setActiveLink(pastLink);
+            }
+        }, 100)
     }
 
     return (

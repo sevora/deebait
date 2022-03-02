@@ -101,6 +101,18 @@ class ChatConnection extends Connection {
             }
         });
 
+        socket.on('is-typing', () => {
+            if (this.partner) {
+                this.partner.emit('is-partner-typing');
+            }
+        });
+
+        socket.on('not-typing', () => {
+            if (this.partner) {
+                this.partner.emit('is-partner-not-typing');
+            }
+        });
+
         if (this.partner) { 
             socket.emit('has-partner', { differences: this.getConflictingAnswers() });
             this.partner.emit('has-partner', { differences: this.partner.getConflictingAnswers() });
