@@ -1,11 +1,12 @@
-- Check out custom Schema Types for Mongoose to allow better structure
-- Make a responsive Dashboard
-- Add Answer Page to set a User's Opinion
-- Add Threads Page to view User's Threads and Watch Past Threads
-- Add Live Page to see active Threads 
-- Add Reaction Points when Live Viewing
-- Add Opinion Page where user can change their Opinions
-- Improve Landing Page 
+SKP - Check out custom Schema Types for Mongoose to allow better structure
+DNE - Make a responsive Dashboard
+DNE - Add Answer Page to set a User's Opinion
+DNE - Add Pairing and Chat Feature
+WIP - Add Threads Page to view User's Threads and Watch Past Threads
+SKP - Add Live Page to see active Threads 
+SKP - Add Reaction Points when Live Viewing
+SKP - Add Opinion Page where user can change their Opinions
+WIP - Improve Landing Page 
 - Add Active Count on Landing Page 
 
 - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0d2l0dGVySUQiOiJkNmE1ZWU3NS00Nzg1LTRiMzItOTE4ZS1iNGQ3MzMwYWQyZmMiLCJpYXQiOjE2NDU3MTYzOTYsImV4cCI6MTY0NTgwMjc5Nn0.HYld12Xx4B91gtDMrr-UaTbA2A2r0rBAEbPiaOQ9vaU

@@ -1,6 +1,4 @@
 // rewrote everything to handle multiple sockets for a single user
-const runes = require('runes');
-
 const User = require('../models/user.js');
 const Topic = require('../models/topic.js');
 const Thread = require('../models/thread.js');
@@ -85,6 +83,7 @@ class ChatConnection extends Connection {
         } else {
             this.partner.emit('partner-left');
             delete connections[this.partner.key];
+            // add code to save thread
         } 
 
         delete connections[this.key];
@@ -98,6 +97,7 @@ class ChatConnection extends Connection {
                 message = message.trim().substring(0, 250);
                 socket.emit('was-sent-to-partner', { message });
                 this.partner.emit('has-message', { message });
+                // add code to add message to thread
             }
         });
 
@@ -170,6 +170,11 @@ class ChatConnection extends Connection {
                 // set the answers correctly
                 this.answers = answers;
                 this.partner.answers = otherAnswers;
+
+                // set their thread
+                let thread = new Thread({ participantIDs: [ this.document.userID, this.partner.document.userID ] });
+                this.thread = thread;
+                this.partner.thread = this.thread;
 
                 matchQueue.splice(index, 1);
                 return null;
