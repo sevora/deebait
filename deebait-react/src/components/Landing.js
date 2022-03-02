@@ -40,7 +40,7 @@ class Landing extends Component {
             <Grid container>
                 <Grid item container xs={12} md={8}>
                     <Grid item container m={5} mb={2} xs={12} alignItems="center" justifyContent="center">
-                        <Grid item>
+                        <Grid item xs={12}>
                             <Typography variant="h2" textAlign="center">
                                 &#60;deebait&#47;&#62;
                             </Typography>
@@ -48,9 +48,14 @@ class Landing extends Component {
                                 The perfect place to argue.
                             </Typography>
                         </Grid>
-                        <Grid item>
-                            <Box mt={4} sx={{ display: { md: 'none' } }}  mb={1}>
+                        <Grid item xs={12}>
+                            <Box mt={4} textAlign="center" sx={{ display: { md: 'none' } }}  mb={1}>
                                 <Button onClick={this.buttonOnClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
+                                <Box mt={1}>
+                                    <Typography textAlign="center" variant="subtitle2">
+                                        By logging in, you agree to our Terms of Service, Privacy Policy, and Cookie Policy.
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Grid>
                     </Grid>
@@ -91,15 +96,14 @@ class Landing extends Component {
                 </Grid>
                 <Grid item container xs={12} md={4} p={2} backgroundColor="#7d7d7d" justifyContent="center" alignContent="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
                     <Grid item>
+                        <Button onClick={this.buttonOnClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
+                    </Grid>
+                    <Grid item md={12}>
                         <Box m={3}>
-                            <Typography variant="body1" color="white">
-                                No need to register. Just a one-tap login
-                                using your Twitter account.
+                            <Typography textAlign="center" variant="subtitle2" sx={{color: '#fff'}}>
+                                By logging in, you agree to our Terms of Service, Privacy Policy, and Cookie Policy.
                             </Typography>
                         </Box>
-                    </Grid>
-                    <Grid item>
-                        <Button onClick={this.buttonOnClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button>
                     </Grid>
                 </Grid>
             </Grid>
