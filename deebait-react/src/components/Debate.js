@@ -22,12 +22,20 @@ class Debate extends Component {
             // messages: [{value: 'Hi', sender: 'user'}],
             differences: [],
             messages: [],
+            
             disconnectMessage: 'Error on connection.',
-            sureEnd: false,
+
             inputValue: '',
+
+            sureEnd: false,
             connected: true,
-            onQueue: true
+            onQueue: true,
+            isPartnerTyping: false
         }
+
+        this.isTyping = false;
+        this.removeTypingTimeout = this.removeTypingTimeout.bind(this);
+        this.removeTypingIndex = null;
 
         this.onInputChange = this.onInputChange.bind(this);
         this.onClickEnter = this.onClickEnter.bind(this);
@@ -44,9 +52,24 @@ class Debate extends Component {
         onAlert: function() { return null; }
     }
 
+    removeTypingTimeout() {
+        this.isTyping = false;
+        this.socket.emit('not-typing');
+    }
+
     onInputChange(event) {
         if (event.target.value.length <= 250) {
             this.setState({ inputValue: event.target.value, sureEnd: false });
+
+            if (!this.isTyping) {
+                this.isTyping = true;
+                this.socket.emit('is-typing');
+            } else {
+                clearTimeout(this.removeTypingIndex);
+            }
+
+            this.removeTypingIndex = setTimeout(this.removeTypingTimeout, 1000);
+
         }
     }
 
@@ -88,7 +111,7 @@ class Debate extends Component {
             }
         });
 
-        this.socket.on('connect', (data) => {
+        this.socket.on('connect', () => {
             this.setState({ differences: [], messages: [], connected: true, onQueue: true });
         });
 
@@ -105,10 +128,18 @@ class Debate extends Component {
             let messages = this.state.messages.concat([{ value: data.message, sender: 'user' }]);
             this.setState({ messages, inputValue: '' });
         });
+
+        this.socket.on('is-partner-typing', () => {
+            this.setState({ isPartnerTyping: true });
+        });
+
+        this.socket.on('is-partner-not-typing', () => {
+            this.setState({ isPartnerTyping: false });
+        });
         
         this.socket.on('partner-left', (data) => {
             this.socket.disconnect();
-            this.setState({ connected: false, disconnectMessage: 'Your deeb match has left' });
+            this.setState({ connected: false, isPartnerTyping: false, disconnectMessage: 'Your deeb match has left' });
         });
         // add is typing thing
     }
@@ -132,6 +163,11 @@ class Debate extends Component {
                         return <DebateMessage key={'message' + index} isSender={message.sender === 'user'}>{message.value}</DebateMessage>
                     })}
 
+                    { this.state.isPartnerTyping && 
+                    <Box sx={{ width: '100%', clear: 'both'}} mb={1} textAlign="center">
+                        Your match is typing...
+                    </Box>}
+
                     {!this.state.connected &&
                     <Box width='100%' textAlign='center' sx={{ clear: 'both'}}>
                         <Typography sx={{marginBottom: '10px'}}>{this.state.disconnectMessage}. Want to match someone random again?</Typography>
@@ -139,12 +175,12 @@ class Debate extends Component {
                     </Box>}
                 </Box>
                 <TextField 
-                    disabled={this.state.onQueue}
+                    disabled={this.state.onQueue || !this.state.connected}
                     value={this.state.inputValue}
                     onChange={this.onInputChange}
                     onKeyPress={this.onClickEnter}
                     placeholder="Enter message here..." 
-                    InputProps={{ startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue} />, endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue} />}}
+                    InputProps={{ startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue || !this.state.connected} />, endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue || !this.state.connected} />}}
                     fullWidth
                 />
             </Box>
