@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import StyleIcon from '@mui/icons-material/Style';
 import ForumIcon from '@mui/icons-material/Forum';
 import HistoryIcon from '@mui/icons-material/History';
-import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import Box from '@mui/material/Box';
