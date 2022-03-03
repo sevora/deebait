@@ -40,7 +40,7 @@ class Landing extends Component {
     }
 
     onFailureGoogle() {
-        this.props.onAlert({ title: 'Login Failed', message: 'Google-Login Failed', severity: 'danger' })
+        this.props.onAlert({ title: 'Login Failed', message: 'Google-Login Failed', severity: 'error' })
     }
 
     render() {
