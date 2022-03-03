@@ -11,7 +11,7 @@ function DebateQuip({ question='Which is better to have as a pet?', partnerChoic
         `They better be tripping, cause they chose '%s' over '%s' 😭`,
     ];
     let index = Math.floor(Math.random() * quips.length);
-    let [text, setText] = useState(sprintf(quips[index], partnerChoice, yourChoice));
+    let [text] = useState(sprintf(quips[index], partnerChoice, yourChoice));
 
     return (
         <Box sx={{ width: '100%'}} mb={1}>
