@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import TwitterIcon from '@mui/icons-material/Twitter';
 
+import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -50,7 +51,7 @@ class Landing extends Component {
                     <Grid item md={12}>
                         <Box m={3}>
                             <Typography textAlign="center" variant="subtitle2">
-                                By logging in, you agree to our Terms of Service, Privacy Policy, and Cookie Policy.
+                                By logging in, you agree to our <Link href="/terms-of-service.html" target="blank" rel="noreferrer">Terms of Service</Link>, <Link href="/privacy-policy.html" target="blank" rel="noreferrer">Privacy Policy</Link>, and <Link href="/cookie-policy.html" target="blank" rel="noreferrer">Cookie Policy</Link>.
                             </Typography>
                         </Box>
                     </Grid>
