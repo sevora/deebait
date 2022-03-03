@@ -55,7 +55,14 @@ class Home extends Component {
     }
 
     onSessionExpired() {
-
+        localStorage.removeItem('token');
+        this.setState({ 
+            headers: null,
+            alertTitle: 'Session Expired',
+            alertMessage: 'Please log-in again',
+            alertSeverity: 'warning',
+            alertIsOpen: true
+        });
     }
 
     onCallAlert({ title, text, severity }) {
