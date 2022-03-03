@@ -88,6 +88,12 @@ class ChatConnection extends Connection {
             this.partner.emit('partner-left');
             this.partner.disconnect();
             delete connections[this.partner.key];
+
+            Thread.findOne({ threadID: this.thread.threadID }, function(error, thread) {
+                if (error) return;
+                if (thread.messages.length === 0) thread.remove();
+            });
+
         } 
 
         delete connections[this.key];

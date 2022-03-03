@@ -112,10 +112,12 @@ class Debate extends Component {
         });
 
         this.socket.on('connect', () => {
+            this.props.onAlert({ title: 'On Queue', text: 'You have been queued for matching. Please wait.', severity: 'warning' });
             this.setState({ differences: [], messages: [], connected: true, onQueue: true });
         });
 
         this.socket.on('has-partner', (data) => {
+            this.props.onAlert({ title: 'Match Found', text: 'You have been matched!', severity: 'success' });
             this.setState({ differences: data.differences, onQueue: false, connected: true });
         });
 

@@ -10,6 +10,7 @@ import MobileNavigation from './MobileNavigation.js';
 import Opinions from './Opinions.js';
 import Debate from './Debate.js';
 import History from './History.js';
+import HistoryView from './HistoryView.js';
 import FAQ from './FAQ.js';
 import Settings from './Settings.js';
 
@@ -50,6 +51,7 @@ class Dashboard extends Component {
                             <Route exact path="/" children={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                             <Route exact path="/debate" children={<Debate headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                             <Route exact path="/history" children={<History headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
+                            <Route exact path="/history/view/:id" children={<HistoryView headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                             <Route exact path="/faq" children={<FAQ headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                             <Route exact path="/settings" children={<Settings headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                         </Switch>

@@ -114,8 +114,46 @@ router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRe
 });
 
 router.get('/threads/past', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) { 
-    return response.status(400);
+    let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
+    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    
+    let [threads, threadsError] = await resolve(
+        Thread
+            .find({ participantIDs: user.userID })
+            .select(['-messages'])
+            .sort({ createdAt: -1})
+            .limit(DOCUMENTS_PER_PAGE)
+    );
+
+    if (threadsError && threads != null) return response.status(400).send({ title: 'ThreadError', message: 'Error retrieving threads.' });
+    if (threads == null) return response.json({ threads: [] });
+    response.json({ threads });
 });
+
+router.post('/threads/view', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
+    let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
+    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+
+    let threadID;
+
+    try {
+        ({ threadID } = request.body);
+    } catch (error) {
+        return response.status(400).send({ title: 'InvalidOperation', message: 'Dude, wtf. Stop.' });
+    }
+
+    let [thread, threadError] = await resolve( Thread.findOne({ threadID }) );
+    if (threadError) return response.status(400).send({ title: 'ThreadNotFound', message: 'This thread does not exist.' });
+
+    let formattedThread = { messages: [], createdAt: thread.createdAt };
+    
+    thread.messages.map(message => {
+        formattedThread.messages.push({ messageValue: message.messageValue, sender: message.senderID == user.userID ? 'user': 'partner' });
+    })
+
+    response.json({ thread: formattedThread });
+});
+
 // Sample code for pagination
 // sexyModel.find()
 //     .skip(pageOptions.page * pageOptions.limit)
