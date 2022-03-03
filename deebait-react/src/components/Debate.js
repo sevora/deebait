@@ -173,7 +173,7 @@ class Debate extends Component {
 
                     { this.state.isPartnerTyping && 
                     <DebateMessage>
-                        <img src="images/triple-dot.gif" style={{width: '100%', height: '12px', objectFit: 'cover' }} />
+                        <img alt="Deeb is typing" src="images/triple-dot.gif" style={{width: '100%', height: '12px', objectFit: 'cover' }} />
                     </DebateMessage>}
 
                     {!this.state.connected &&
