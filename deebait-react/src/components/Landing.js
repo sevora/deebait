@@ -2,18 +2,11 @@ import { Component } from 'react';
 import axios from 'axios';
 
 import TwitterIcon from '@mui/icons-material/Twitter';
-import LockIcon from '@mui/icons-material/Lock';
-import BookIcon from '@mui/icons-material/Book';
-import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts';
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-
-import PaperGridItem from './PaperGridItem.js';
-import AlignTextIcon from './AlignTextIcon.js';
 
 class Landing extends Component {
     constructor(props) {
