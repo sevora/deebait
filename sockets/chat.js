@@ -35,10 +35,10 @@ function onConnectIO(socket, io) {
     try {
         token = parseHeaderToToken(socket.handshake.headers['deebaitheader']);
     } catch(error) {
-        console.log(error)
-        socket.disconnect();
+        return socket.disconnect();
     }
 
+    // i think i can remove this line lol
     if (!token) return;
 
     decodeToken(token, async (error, decoded) => {
@@ -65,13 +65,17 @@ class ChatConnection extends Connection {
         
         this.key = key;
         this.document = document;
+        this.thread = null;
 
         this.queued = false;
         this.partner = null;
         this.topics = null;
         this.answers = null;
+
+        this.threadSaves = 0;
     }
 
+    // this implementation deletes the connection object and disconnects then deletes its partner 
     onEmptySockets() {
         if (!this.partner) {
             for (let index = matchQueue.length-1; index >= 0; --index) {
@@ -82,8 +86,8 @@ class ChatConnection extends Connection {
             }
         } else {
             this.partner.emit('partner-left');
+            this.partner.disconnect();
             delete connections[this.partner.key];
-            // add code to save thread
         } 
 
         delete connections[this.key];
@@ -97,7 +101,24 @@ class ChatConnection extends Connection {
                 message = message.trim().substring(0, 250);
                 socket.emit('was-sent-to-partner', { message });
                 this.partner.emit('has-message', { message });
+                
+
                 // add code to add message to thread
+                if (this.threadSaves < 10000 && this.thread) {
+                    Thread.updateOne(
+                        { _id: this.thread._id }, 
+                        { $push: { messages: { messageValue: message, senderID: this.document.userID } } },
+                        function (error, success) {
+                            return;
+                            // if (error) return console.log(`Error:\n${error}`);
+                            // console.log(`Success:\n${success}`);
+                        }
+                    );
+
+                    ++this.threadSaves;
+
+                    // the whole code above updates the thread directly to the db
+                }
             }
         });
 
@@ -140,7 +161,7 @@ class ChatConnection extends Connection {
             let otherTopicsIDs = otherTopics.map(mapTopicID);
             let sameTopicsIDs = commonElements(topicsIDs, otherTopicsIDs);
             
-            let [sameTopics, sameTopicsError] = await resolve(Topic.find({ topicID: { $in: sameTopicsIDs }}) );
+            let [sameTopics, sameTopicsError] = await resolve(Topic.find({ topicID: { $in: sameTopicsIDs }}).sort({ createdAt: -1}).limit(10) );
             if (sameTopicsError) continue;   
             let otherChoiceIDs = otherTopics.map(mapChoiceID);
 
@@ -172,7 +193,10 @@ class ChatConnection extends Connection {
                 this.partner.answers = otherAnswers;
 
                 // set their thread
-                let thread = new Thread({ participantIDs: [ this.document.userID, this.partner.document.userID ] });
+                let newThread = new Thread({ participantIDs: [ this.document.userID, this.partner.document.userID ] });
+                let [thread, threadError] = await resolve( newThread.save() );
+                if (threadError) return null;
+
                 this.thread = thread;
                 this.partner.thread = this.thread;
 

@@ -45,6 +45,10 @@ class Connection {
         }
     }
 
+    disconnect() {
+        Object.values(this.sockets).forEach(socket => { socket.disconnect(); }); 
+    }
+
     // /**
     //  * 
     //  */

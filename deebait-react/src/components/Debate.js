@@ -121,12 +121,16 @@ class Debate extends Component {
 
         this.socket.on('has-message', (data) => {
             let messages = this.state.messages.concat([{ value: data.message, sender: 'partner' }]);
-            this.setState({ messages });
+            this.setState({ messages }, () => {
+                this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+            });
         });
 
         this.socket.on('was-sent-to-partner', (data) => {
             let messages = this.state.messages.concat([{ value: data.message, sender: 'user' }]);
-            this.setState({ messages, inputValue: '' });
+            this.setState({ messages, inputValue: '' }, () => {
+                this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+            });
         });
 
         this.socket.on('is-partner-typing', () => {
@@ -138,8 +142,10 @@ class Debate extends Component {
         });
         
         this.socket.on('partner-left', (data) => {
-            this.socket.disconnect();
-            this.setState({ connected: false, isPartnerTyping: false, disconnectMessage: 'Your deeb match has left' });
+            // this.socket.disconnect();
+            this.setState({ connected: false, isPartnerTyping: false, disconnectMessage: 'Your deeb match has left' }, () => {
+                this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+            });
         });
         // add is typing thing
     }
@@ -164,15 +170,17 @@ class Debate extends Component {
                     })}
 
                     { this.state.isPartnerTyping && 
-                    <Box sx={{ width: '100%', clear: 'both'}} mb={1} textAlign="center">
-                        Your match is typing...
-                    </Box>}
+                    <DebateMessage>
+                        <img src="images/triple-dot.gif" style={{width: '100%', height: '12px', objectFit: 'cover' }} />
+                    </DebateMessage>}
 
                     {!this.state.connected &&
                     <Box width='100%' textAlign='center' sx={{ clear: 'both'}}>
-                        <Typography sx={{marginBottom: '10px'}}>{this.state.disconnectMessage}. Want to match someone random again?</Typography>
+                        <Typography sx={{  paddingTop: '12px', marginBottom: '10px'}}>{this.state.disconnectMessage}. Want to match someone random again?</Typography>
                         <Button onClick={this.onReconnect} variant="outlined">Queue</Button>
                     </Box>}
+
+                    <div style={{ float:"left", clear: "both" }} ref={(element) => { this.messagesEnd = element; }}></div>
                 </Box>
                 <TextField 
                     disabled={this.state.onQueue || !this.state.connected}
