@@ -7,6 +7,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
 
+import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
 import List from "@mui/material/List";
@@ -15,10 +16,10 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 
 function DesktopNavigation({ sx={} }) {
-    let links = ['Opinions', 'Debate', 'History', 'FAQ', 'Settings'];
+    let links = ['Opinions', 'Debate', 'History', 'Settings'];
     let indexOfCurrentLink = getCurrentIndex();
     let [selectedLinkIndex, setSelectedLinkIndex] = useState(indexOfCurrentLink);
-    let icons = [<StyleIcon />, <ForumIcon />, <HistoryIcon />, <HelpIcon />, <SettingsIcon />];
+    let icons = [<StyleIcon />, <ForumIcon />, <HistoryIcon />, <SettingsIcon />];
 
     function getCurrentIndex() {
         if (window.location.pathname === '/') return 0; // this is to return the right index for opinions page which is at '/'
@@ -44,7 +45,7 @@ function DesktopNavigation({ sx={} }) {
             <List>
                 <ListItem style={{justifyContent:'center'}}>
                     <Typography variant="h5">
-                        &#60;deebait&#47;&#62;
+                        dee<Box color="primary.main" display="inline">bait</Box>
                     </Typography>
                 </ListItem>
                 {

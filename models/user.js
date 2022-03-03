@@ -4,11 +4,8 @@ const uuidv4 = require('uuid').v4;
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    twitterID: {
+    googleEmail: {
         type: String,
-        unique: true,
-        minLength: 1,
-        maxLength: 300,
         required: true
     },
     userID: {
@@ -33,14 +30,6 @@ const userSchema = new Schema({
             }
         }
     ],
-    pointsToSpend: {
-        type: Number,
-        default: 100
-    },
-    pointsReceived: {
-        type: Number,
-        default: 0
-    },
     isBanned: {
         type: Boolean,
         default: false

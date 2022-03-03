@@ -91,9 +91,9 @@ class History extends Component {
     }
 
     errorHandler(error) {
-        console.log(error);
+        if (error.response && error.response.data.title === 'InvalidUser') this.props.onSessionExpired();
     }
-
+    
     render() {
         return (
             <Box>

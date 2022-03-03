@@ -39,7 +39,7 @@ class Home extends Component {
         this.setState({ 
             headers, 
             alertTitle: 'Success!',
-            alertMessage: 'Succesful authentication via Twitter.',
+            alertMessage: 'Succesful authentication.',
             alertSeverity: 'success',
             alertIsOpen: true
         });
@@ -104,7 +104,7 @@ class Home extends Component {
                     {this.state.alertMessage}
                 </TemporaryAlert>
                 {/* Both dashboard and landing mess with each other's style somehow */}
-                {this.state.headers ? <Dashboard headers={this.state.headers} onSessionExpired={this.onSessionExpired} onAlert={this.onCallAlert} /> :  <Landing onSuccessfulAuthentication={this.onSuccessfulAuthentication} onUnsuccessfulAuthentication={this.onUnsuccessfulAuthentication} />}
+                {this.state.headers ? <Dashboard headers={this.state.headers} onSessionExpired={this.onSessionExpired} onAlert={this.onCallAlert} /> :  <Landing onSuccessfulAuthentication={this.onSuccessfulAuthentication} onUnsuccessfulAuthentication={this.onUnsuccessfulAuthentication} onAlert={this.onCallAlert} />}
             </Grid>
         );
     }
