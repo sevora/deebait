@@ -113,6 +113,9 @@ router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRe
     response.json({ title: 'OpinionAdded', message: 'Successfully added opinion!' });
 });
 
+router.get('/threads/past', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) { 
+    return response.status(400);
+});
 // Sample code for pagination
 // sexyModel.find()
 //     .skip(pageOptions.page * pageOptions.limit)
