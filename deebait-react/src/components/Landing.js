@@ -85,7 +85,7 @@ class Landing extends Component {
                     <Grid item md={12}>
                         <Box m={3}>
                             <Typography textAlign="center" variant="subtitle2">
-                                By logging in, you agree to our <Link href="/terms-of-service.html" target="blank" rel="noreferrer">Terms of Service</Link>, <Link href="/privacy-policy.html" target="blank" rel="noreferrer">Privacy Policy</Link>, and <Link href="/cookie-policy.html" target="blank" rel="noreferrer">Cookie Policy</Link>.
+                                By logging in, you agree to our <MaterialLink href={process.env.PUBLIC_URL + "/terms-of-service.html"} target="_blank" rel="noreferrer">Terms of Service</MaterialLink>, <MaterialLink href={process.env.PUBLIC_URL + "/privacy-policy.html"} target="_blank" rel="noreferrer">Privacy Policy</MaterialLink>, and <MaterialLink href={process.env.PUBLIC_URL + "/cookie-policy.html"} target="_blank" rel="noreferrer">Cookie Policy</MaterialLink>.
                             </Typography>
                         </Box>
                     </Grid>
