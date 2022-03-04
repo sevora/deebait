@@ -1,4 +1,5 @@
 // route for user auth
+require('dotenv').config();
 const router = require('express').Router();
 const uuidv4 = require('uuid').v4;
 const { resolve } = require('../helper.js');
@@ -35,15 +36,17 @@ router.post('/google', function(request, response) {
         });
 });
 
-// router.post('/testing', function(request, response) {
-//     // we just assign user as valid randomly for development
-//     new User({
-//         googleEmail: (() => uuidv4())(),
-//     }).save(function(error, user) {
-//         if (error) return response.status(400).json(error);
-//         let token = jwt.sign({ userID: user.userID }, process.env.JWT_SECRET, { expiresIn: '24h' });
-//         response.status(200).json({ token });
-//     });
-// });
+if (process.env.DEVELOPMENT_MODE == 'true') {
+    router.post('/testing', function(request, response) {
+        // we just assign user as valid randomly for development
+        new User({
+            googleEmail: (() => uuidv4())(),
+        }).save(function(error, user) {
+            if (error) return response.status(400).json(error);
+            let token = jwt.sign({ userID: user.userID }, process.env.JWT_SECRET, { expiresIn: '24h' });
+            response.status(200).json({ token });
+        });
+    });
+}
 
 module.exports = router;

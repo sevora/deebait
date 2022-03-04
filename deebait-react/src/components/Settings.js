@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -40,6 +41,12 @@ class Settings extends Component {
                         />
                     </ListItem>
 
+                    <ListItem button divider component={Link} to={'/faq'}>
+                        <ListItemText 
+                            primary='Frequently Asked Questions'
+                            secondary='Click to see common questions regarding the site and our answer.'
+                        />
+                    </ListItem>
                 </List>
             </Box>
         );

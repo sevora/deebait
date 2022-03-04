@@ -2,6 +2,9 @@ import { Component } from 'react';
 import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
 
+import LoginIcon from '@mui/icons-material/Login';
+
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -10,9 +13,12 @@ import Typography from '@mui/material/Typography';
 class Landing extends Component {
     constructor(props) {
         super(props);
-        // this.buttonOnClick = this.buttonOnClick.bind(this);
+
+        this.onTestButtonClick = this.onTestButtonClick.bind(this);
         this.onSuccessGoogle = this.onSuccessGoogle.bind(this);
         this.onFailureGoogle = this.onFailureGoogle.bind(this);
+
+        this.signal = axios.CancelToken.source();
     }
 
     static defaultProps = {
@@ -21,17 +27,17 @@ class Landing extends Component {
         onUnsuccessfulAuthentication: function() { return null },
     }
 
-    // buttonOnClick() {
-    //     // add code to handle error when 
-    //     axios.post(process.env.REACT_APP_API_URL + '/authentication/twitter', {}).then(response => {
-    //         this.props.onSuccessfulAuthentication(response.data.token);
-    //     }).catch(function(error) {
-    //         this.props.onUnsuccessfulAuthentication(error);
-    //     }.bind(this));
-    // }
+    onTestButtonClick() {
+        // add code to handle error when 
+        axios.post(process.env.REACT_APP_API_URL + '/authentication/testing', {}).then(response => {
+            this.props.onSuccessfulAuthentication(response.data.token);
+        }).catch(function(error) {
+            this.props.onUnsuccessfulAuthentication(error);
+        }.bind(this));
+    }
 
     onSuccessGoogle(response) { 
-        axios.post(process.env.REACT_APP_API_URL + '/authentication/google', { tokenId: response.tokenId })
+        axios.post(process.env.REACT_APP_API_URL + '/authentication/google', { tokenId: response.tokenId, cancelToken: this.signal  })
             .then(response => {
                 this.props.onSuccessfulAuthentication(response.data.token);
             }).catch((error) => {
@@ -41,6 +47,10 @@ class Landing extends Component {
 
     onFailureGoogle() {
         this.props.onAlert({ title: 'Login Failed', message: 'Google-Login Failed', severity: 'error' })
+    }
+
+    componentWillUnmount() {
+        this.signal.cancel();
     }
 
     render() {
@@ -60,14 +70,16 @@ class Landing extends Component {
                 </Grid>
                 <Grid item container xs={12} md={5} p={2} justifyContent="center" alignContent="center" >
                     <Grid item>
-                        <GoogleLogin
-                            clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-                            buttonText="LOGIN WITH GOOGLE"
-                            onSuccess={this.onSuccessGoogle}
-                            onFailure={this.onFailureGoogle}
-                            cookiePolicy={'single_host_origin'}
-                        />
-                        {/* <Button onClick={this.buttonOnClick} startIcon={<TwitterIcon />} variant="contained">Log-in via Twitter</Button> */}
+                        { process.env.REACT_APP_DEVELOPMENT_MODE !== 'true' ? 
+                            <GoogleLogin
+                                clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                                buttonText="LOGIN WITH GOOGLE"
+                                onSuccess={this.onSuccessGoogle}
+                                onFailure={this.onFailureGoogle}
+                                cookiePolicy={'single_host_origin'}
+                            /> :
+                            <Button onClick={this.onTestButtonClick} startIcon={<LoginIcon/>} variant="contained">Log-in Development</Button>
+                        }
                     </Grid>
                     <Grid item md={12}>
                         <Box m={3}>

@@ -61,6 +61,8 @@ class History extends Component {
 
         this.timeInterval = null;
         this.errorHandler = this.errorHandler.bind(this);
+
+        this.signal = axios.CancelToken.source();
     }
 
     static defaultProps = {
@@ -70,7 +72,7 @@ class History extends Component {
     }
 
     componentDidMount() {
-        axios.get(process.env.REACT_APP_API_URL + '/user/threads/past', { headers: this.props.headers })
+        axios.get(process.env.REACT_APP_API_URL + '/user/threads/past', { headers: this.props.headers, cancelToken: this.signal })
         .then((response) => {
             let threads = response.data.threads.map(thread => {
                 thread.expiresAt = addDays(thread.createdAt, 7);
@@ -86,6 +88,7 @@ class History extends Component {
     }
 
     componentWillUnmount() {
+        this.signal.cancel();
         clearInterval(this.timeInterval);
         this.timeInterval = null;
     }

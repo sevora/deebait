@@ -16,7 +16,7 @@ const Thread = require('../models/thread.js');
  */
 router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, error] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (error) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    if (error || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
     response.json({ title: 'Success', message: 'This user is valid!' });
 });
 
@@ -26,7 +26,7 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
  */
  router.get('/topics/answered', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
 
     // we just wanna unpack every topicID and choiceID from the user's topics
     let userTopicIDs = [];
@@ -68,7 +68,7 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
  */
 router.get('/topics/unanswered', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
 
     // sort createdAt -1 returns the latest documents since it orders them by descending order,
     // and the highest value is the latest on
@@ -91,7 +91,7 @@ router.get('/topics/unanswered', [decodeTokenMiddleware, handleBadDecodedRequest
  */
 router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
 
     let topicID, choiceID;
 
@@ -115,7 +115,7 @@ router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRe
 
 router.get('/threads/past', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) { 
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
     
     let [threads, threadsError] = await resolve(
         Thread
@@ -132,7 +132,7 @@ router.get('/threads/past', [decodeTokenMiddleware, handleBadDecodedRequest], as
 
 router.post('/threads/view', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
-    if (userError) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
+    if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
 
     let threadID;
 
