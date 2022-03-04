@@ -14,6 +14,7 @@ import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import themeOptions from './Theme.js';
 import Home from './components/Home.js';
 import Footer from './components/Footer.js';
+import FAQ from './components/FAQ.js';
 
 let theme = createTheme(themeOptions);
 theme = responsiveFontSizes(theme);

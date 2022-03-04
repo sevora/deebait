@@ -13,14 +13,16 @@ class Opinions extends Component {
     constructor(props) {
         super(props);
 
-        this.getUnansweredTopics = this.getUnansweredTopics.bind(this);
-        this.onClickOpinion = this.onClickOpinion.bind(this);
-        this.errorHandler = this.errorHandler.bind(this);
-
         this.state = {
             topicsUnanswered: [],
             topicsAnswered: []
         }
+
+        this.getUnansweredTopics = this.getUnansweredTopics.bind(this);
+        this.onClickOpinion = this.onClickOpinion.bind(this);
+        this.errorHandler = this.errorHandler.bind(this);
+
+        this.signal = axios.CancelToken.source();
     }
 
     static defaultProps = {
@@ -40,7 +42,7 @@ class Opinions extends Component {
         let topicID = topic.topicID;
         let choiceID = topic.choices.find(choice => choice.choiceValue === answer).choiceID;
 
-        axios.post(process.env.REACT_APP_API_URL + '/user/topics/unanswered/set', { topicID, choiceID }, { headers: this.props.headers })
+        axios.post(process.env.REACT_APP_API_URL + '/user/topics/unanswered/set', { topicID, choiceID, cancelToken: this.signal }, { headers: this.props.headers })
         .then((response) => {
 
             if (topicsUnanswered.length === 0) this.getUnansweredTopics();
@@ -75,6 +77,10 @@ class Opinions extends Component {
 
             this.setState({ topicsAnswered });
         }).catch(this.errorHandler);
+    }
+
+    componentWillUnmount() {
+        this.signal.cancel();
     }
 
     errorHandler(error) {

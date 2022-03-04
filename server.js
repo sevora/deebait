@@ -25,11 +25,6 @@ app.use(helmet());
 
 mongoose.connect(process.env.ATLAS_URL);
 
-const connection = mongoose.connection;
-connection.once('open', function() {
-    console.log('Connection to MongoDB established successfully.')
-});
-
 const authenticationRouter = require('./routes/authentication.js');
 const userControlsRouter = require('./routes/user-controls.js');
 
@@ -40,4 +35,9 @@ io.of('/chat').on('connection', function(socket) {
     require('./sockets/chat.js')(socket, io);
 });
 
-server.listen(process.env.PORT || 80);
+const connection = mongoose.connection;
+
+connection.once('open', function() {
+    server.listen(process.env.PORT || 80); 
+    console.log('Successfully connected to MongoDB and started server on specified port!');
+});
