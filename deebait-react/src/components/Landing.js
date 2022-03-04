@@ -1,11 +1,12 @@
 import { Component } from 'react';
 import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
+import { Link } from 'react-router-dom';
 
 import LoginIcon from '@mui/icons-material/Login';
 
 import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
+import MaterialLink from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -56,10 +57,10 @@ class Landing extends Component {
     render() {
         return (
             <Grid container>
-                <Grid item container xs={12} md={7} sx={{ minHeight: { xs: "70vh", md: "90vh" } }}>
+                <Grid item container xs={12} md={7} sx={{ minHeight: { xs: "70vh", md: "100vh" } }}>
                     <Grid item container xs={12} alignItems="center" justifyContent="center" height="100%">
                         <Grid item xs={12}>
-                            <Typography variant="h2" textAlign="center">
+                            <Typography variant="h1" textAlign="center">
                                 dee<Box color="primary.main" display="inline">bait</Box>
                             </Typography>
                             <Typography variant="h4" textAlign="center">
@@ -88,6 +89,15 @@ class Landing extends Component {
                             </Typography>
                         </Box>
                     </Grid>
+                </Grid>
+                <Grid item xs={12} m={3}>
+                    <Typography variant="h2" textAlign="right">
+                        "Anonymously express your views and beliefs with others through one-on-one 
+                        chat"
+                    </Typography>
+                    <Typography variant="subtitle1" textAlign="right">
+                        <MaterialLink component={Link} to={'/see/faq'}>Why the login? I thought this was supposed to be anonymous?</MaterialLink>
+                    </Typography>
                 </Grid>
             </Grid>
         );
