@@ -5,7 +5,9 @@ import '@fontsource/roboto/700.css';
 
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
+import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import createTheme from '@mui/material/styles/createTheme';
 import responsiveFontSizes from '@mui/material/styles/responsiveFontSizes'
@@ -46,7 +48,14 @@ function App() {
       </HelmetProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Home />
+        <Switch>
+          <Route 
+            exact 
+            path="/see/faq" 
+            children={<Box ml={3} mr={3} mt={3} mb={3}><FAQ/></Box>}>
+            </Route>
+          <Route path='/' children={<Home />}></Route>
+        </Switch>
         <Footer />
       </ThemeProvider>
     </Router>
