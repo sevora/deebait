@@ -3,13 +3,14 @@ const router = require("express").Router();
 const { resolve } = require('../helper.js');
 const { decodeTokenMiddleware } = require('./decode-token.js');
 
-const DOCUMENTS_PER_PAGE = 30;
+const DOCUMENTS_PER_PAGE = 30; // Documents -> A database entry
 
 const User = require("../models/user.js");
 const Topic = require("../models/topic.js");
 const Thread = require('../models/thread.js');
 
 /**
+ * GET /user/check
  * This route is used to check for a user's validity.
  * It just returns a success message if the user exists (aka valid)
  * and an error message if not.
@@ -21,6 +22,7 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
 });
 
 /**
+ * GET /user/topics/answered
  * This route gets the topics a valid user has given an answer to.
  * This means it responds back with an Array called 'topics' through JSON.
  */
@@ -63,6 +65,7 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
 });
 
 /**
+ * GET /user/topics/unanswered
  * This route gets the topics a valid user hasn't given an answer to yet.
  * This means it responds back with an Array called 'topics' through JSON.
  */
@@ -86,8 +89,10 @@ router.get('/topics/unanswered', [decodeTokenMiddleware, handleBadDecodedRequest
 });
 
 /**
+ * POST /user/topics/unanswered/set
  * This route is used to set a user's answer on a topic.
- * Ofcourse it handles errors too.
+ * It checks the body of the request for topicID and choiceID
+ * and uses that to set the user's choice in a topic.
  */
 router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
@@ -113,6 +118,10 @@ router.post('/topics/unanswered/set', [decodeTokenMiddleware, handleBadDecodedRe
     response.json({ title: 'OpinionAdded', message: 'Successfully added opinion!' });
 });
 
+/**
+ * GET /user/threads/past
+ * This responds with the threads that the user has been involved with.
+ */
 router.get('/threads/past', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) { 
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
     if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
@@ -130,6 +139,13 @@ router.get('/threads/past', [decodeTokenMiddleware, handleBadDecodedRequest], as
     response.json({ threads });
 });
 
+/**
+ * POST /threads/view
+ * This responds with the thread entry of the corresponding threadID 
+ * in the request's body. This does not check if the user is a participant of 
+ * the thread so anyone can get anybody else's thread but they wouldn't know who is
+ * who since the sender property will all be false.
+ */
 router.post('/threads/view', [decodeTokenMiddleware, handleBadDecodedRequest], async function(request, response) {
     let [user, userError] = await resolve( User.findOne({ userID: request.decoded.userID }) );
     if (userError || user.isBanned) return response.status(400).send({ title: 'InvalidUser', message: 'This user does not exist' });
@@ -166,9 +182,9 @@ router.post('/threads/view', [decodeTokenMiddleware, handleBadDecodedRequest], a
 /**
  * Custom middleware to handle bad decode request 
  * when using the JWT.
- * @param {*} request 
- * @param {*} response 
- * @param {*} next 
+ * @param request 
+ * @param response 
+ * @param next 
  */
 function handleBadDecodedRequest(request, response, next) {
     if (request.decoded.error) {

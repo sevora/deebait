@@ -1,3 +1,7 @@
+/**
+ * This is the Landing Page component where users can log-in the site,
+ * Currently only Google Log-In is implemented.
+ */
 import { Component } from 'react';
 import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
@@ -28,6 +32,11 @@ class Landing extends Component {
         onUnsuccessfulAuthentication: function() { return null },
     }
 
+    /**
+     * This is only used for development/testing
+     * It uses the /authentication/testing route only available on
+     * development mode.
+     */
     onTestButtonClick() {
         // add code to handle error when 
         axios.post(process.env.REACT_APP_API_URL + '/authentication/testing', {}).then(response => {
@@ -37,6 +46,11 @@ class Landing extends Component {
         }.bind(this));
     }
 
+    /**
+     * This is a callback function for the react-google-login component
+     * and it is called whenever the log-in process is a success.
+     * @param response 
+     */
     onSuccessGoogle(response) { 
         axios.post(process.env.REACT_APP_API_URL + '/authentication/google', { tokenId: response.tokenId, cancelToken: this.signal  })
             .then(response => {
@@ -46,6 +60,11 @@ class Landing extends Component {
             });
     }
 
+    /**
+     * This is a callback function for the react-google-login component
+     * and it is called whenever authentication fails. Somehow it gets called also
+     * when the load pages by default, they should really fix that.
+     */
     onFailureGoogle() {
         this.props.onAlert({ title: 'Login Failed', message: 'Google-Login Failed', severity: 'error' })
     }

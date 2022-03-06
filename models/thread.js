@@ -1,3 +1,9 @@
+/**
+ * Thread Schema Definition
+ * This is used as the schema for 
+ * threads aka the message entries
+ * between two users.
+ */
 const mongoose = require('mongoose');
 const uuidv4 = require('uuid').v4;
 

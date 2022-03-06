@@ -11,14 +11,6 @@ let connections = {};
 let matchQueue = [];
 
 /**
- * Comment this code below if unnecessary anymore, just parses crap
- */
-// setInterval(function() {
-//     console.log(`No. of users connected: ${Object.keys(connections).length}`);
-//     console.log(`No. of connections: ${Object.values(connections).map(connection => Object.keys(connection.sockets).length).join(', ')}`);
-// }, 500); 
-
-/**
  * This is used as a callback inside io.on('connection') and it should receive the
  * incoming socket and io. Here's how this works:
  * 1. User finds match or gets into queue
@@ -38,7 +30,7 @@ function onConnectIO(socket, io) {
         return socket.disconnect();
     }
 
-    // i think i can remove this line lol
+    // I think I can remove this line lol
     if (!token) return;
 
     decodeToken(token, async (error, decoded) => {
@@ -46,7 +38,8 @@ function onConnectIO(socket, io) {
         let [user, userError] = await resolve( User.findOne({ userID: decoded.userID }) );
         if (userError || user.isBanned) return socket.disconnect();
 
-        // create connection to user
+        // The piece of code below either gets an existing user connection
+        // or creates a new one if it doesn't exist.
         let connection = connections[user.userID];
 
         if (!connection) {
@@ -59,6 +52,10 @@ function onConnectIO(socket, io) {
     });
 }
 
+/**
+ * This is an implementation of a ChatConnection referring to a connection
+ * between two users. The server simply passes the messages around.
+ */
 class ChatConnection extends Connection {
     constructor(key, document) {
         super();
@@ -75,8 +72,13 @@ class ChatConnection extends Connection {
         this.threadSaves = 0;
     }
 
-    // this implementation deletes the connection object and disconnects then deletes its partner 
+    /**
+     * This implementation disconnects and deletes the partner (if there is any),
+     * plus saves the thread and then deletes itself.
+     */
     onEmptySockets() {
+        // Of course, if this thing doesn't have a partner yet, then it is on queue,
+        // In which case it should be removed.
         if (!this.partner) {
             for (let index = matchQueue.length-1; index >= 0; --index) {
                 if (matchQueue[index].key == this.key) {
@@ -99,60 +101,78 @@ class ChatConnection extends Connection {
         delete connections[this.key];
     }
 
+    /**
+     * This defines how partners communicate between each other.
+     * @param socket A socket provided by whatever called this method.
+     */
     onRegisterSocket(socket) {
         socket.on('send-to-partner', data => {
             let message = data ? data.message : null;
 
             if (this.partner && message) {
+                // We limit messages to 250 characters all the time.
                 message = message.trim().substring(0, 250);
                 socket.emit('was-sent-to-partner', { message });
                 this.partner.emit('has-message', { message });
                 
-
-                // add code to add message to thread
+                // This limits the thread saving to 10,000 saves.
                 if (this.threadSaves < 10000 && this.thread) {
+
+                    // This query updates the thread directly to the database.
                     Thread.updateOne(
                         { _id: this.thread._id }, 
                         { $push: { messages: { messageValue: message, senderID: this.document.userID } } },
                         function (error, success) {
                             return;
-                            // if (error) return console.log(`Error:\n${error}`);
-                            // console.log(`Success:\n${success}`);
                         }
                     );
 
-                    ++this.threadSaves;
-
-                    // the whole code above updates the thread directly to the db
+                    this.partner.threadSaves = ++this.threadSaves;
                 }
             }
         });
 
+        // This listener is part of the typing feature.
+        // When someone is typing, they should see, 
+        // something similar to "X is typing"
         socket.on('is-typing', () => {
             if (this.partner) {
                 this.partner.emit('is-partner-typing');
             }
         });
 
+        // This listener is part of the typing feature.
+        // It should send a message to stop the typing.
         socket.on('not-typing', () => {
             if (this.partner) {
                 this.partner.emit('is-partner-not-typing');
             }
         });
 
+        // If the user has a partner, this makes it so that
+        // the client socket knows it has a partner.
         if (this.partner) { 
             socket.emit('has-partner', { differences: this.getConflictingAnswers() });
             this.partner.emit('has-partner', { differences: this.partner.getConflictingAnswers() });
         }
     }
 
+    /**
+     * This causes only a side effect related to values of the 
+     * connections in matchQueue including 'this' 
+     * The algorithm works as follows:
+     * 1. If queue is empty simply add 'this' to queue, if so END. 
+     * 2. Iterate through the queue array and if a connection matches the criteria,
+     * 3. Set each other as each other's partners and then END
+     * 4. If there are no matches, add 'this' to queue, then END.
+     */
     async findPartner() {
         if (matchQueue.length == 0) {
             matchQueue.push(this);
-            return null;
+            this.queued = true;
         }
 
-        if (this.queued) return null;
+        if (this.queued) return;
 
         let mapTopicID = topic => topic.topicID;
         let mapChoiceID = topic => topic.choiceID;
@@ -171,6 +191,7 @@ class ChatConnection extends Connection {
             if (sameTopicsError) continue;   
             let otherChoiceIDs = otherTopics.map(mapChoiceID);
 
+            // these parts could've been written better
             let answers = sameTopics.map(topic => {
                 let index = topicsIDs.indexOf(topic.topicID);
                 let choiceID = choiceIDs[index];
@@ -201,13 +222,14 @@ class ChatConnection extends Connection {
                 // set their thread
                 let newThread = new Thread({ participantIDs: [ this.document.userID, this.partner.document.userID ] });
                 let [thread, threadError] = await resolve( newThread.save() );
-                if (threadError) return null;
+                if (threadError) return;
 
                 this.thread = thread;
                 this.partner.thread = this.thread;
+                this.partner.queued = false; // not necessary but let's add it to prevent possible future problems
 
                 matchQueue.splice(index, 1);
-                return null;
+                return;
             }
         }
 
@@ -215,6 +237,10 @@ class ChatConnection extends Connection {
         this.queued = true;        
     }
 
+    /**
+     * This simply calculates an array of conflicting answers between the partners.
+     * @returns An array of objects with question and answer keys that has String values.
+     */
     getConflictingAnswers() {
         let conflicting = [];
         if (this.answers) this.answers.forEach((answer, index) => {

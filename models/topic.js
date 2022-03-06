@@ -1,3 +1,8 @@
+/**
+ * This is the schema definition for a Topic,
+ * it is essentially a question where you can choose
+ * between two pre-set answers used to match users
+ */
 const mongoose = require('mongoose');
 const uuidv4 = require('uuid').v4;
 

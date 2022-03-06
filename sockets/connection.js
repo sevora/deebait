@@ -1,18 +1,19 @@
 /**
- *  This class is used to make connections easier
+ * This class is used to make multiple socket connections easier
+ * as it enables one connection with multiple sockets pointing to the
+ * same "user."
  */
 
 class Connection {
     /**
-     * 
-     * @param {*} sockets 
+     * To add sockets, use its addSocket method.
      */
     constructor() {
         this.sockets = {};
     }
 
     /**
-     * 
+     * Refers to a socket from socket.io
      * @param {*} socket 
      */
     addSocket(socket) {
@@ -24,18 +25,19 @@ class Connection {
     }
 
     /**
-     * 
-     * @param {*} title 
-     * @param {*} data 
+     * This simply uses the sockets' emit method,
+     * meaning this emits to all sockets in a connection.
+     * @param title String that is a title.
+     * @param data String or Object.
      */
     emit(title, data) { 
         Object.values(this.sockets).forEach(socket => { socket.emit(title, data); }); 
     }
 
     /**
-     * 
-     * @param {*} reason 
-     * @param {*} socket 
+     * This is a private method.
+     * @param reason 
+     * @param socket 
      */
     onSocketDisconnect(reason, socket) {
         delete this.sockets[socket.id];
@@ -45,24 +47,31 @@ class Connection {
         }
     }
 
+    /**
+     * Use this to close the connection,
+     * it just disconnects all of its sockets
+     */
     disconnect() {
         Object.values(this.sockets).forEach(socket => { socket.disconnect(); }); 
     }
 
     // /**
-    //  * 
+    //  * Please implement this method
+    //  * on extend.
     //  */
     // onEmptySockets() { 
     //     // define me  
+    //     // this function runs when all of the sockets are disconnected
     // }
 
     // /**
-    //  * 
+    //  * Please implement this method on extend.
     //  * @param {*} socket 
     //  * @param {*} io 
     //  */
-    // onRegisterSocket(socket) {
+    // onRegisterSocket(socket, io) {
     //     // define me
+    //     // this function runs whenever addSocket is called
     // }
 }
 
