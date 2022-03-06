@@ -1,5 +1,8 @@
-// route for user auth
+/**
+ * 
+ */
 require('dotenv').config();
+
 const router = require('express').Router();
 const uuidv4 = require('uuid').v4;
 const { resolve } = require('../helper.js');
@@ -10,6 +13,12 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+/**
+ * POST /authentication/google
+ * This responds with a JSON Web Token,
+ * For the server it finds the right user entry in the database through their
+ * Google email, if they don't exist in the database they are then created
+ */
 router.post('/google', function(request, response) {
     if (!request.body || !request.body.tokenId) return response.status(400).json('No user specified.')
 
@@ -17,6 +26,7 @@ router.post('/google', function(request, response) {
     
     googleClient.verifyIdToken({ idToken: tokenId, audience: process.env.GOOGLE_CLIENT_ID })
         .then(async (googleResponse) => {    
+
             // only verified emails are allowed
             const { email_verified, name, email } = googleResponse.payload;
             if (!email_verified) return response.status(400).json('Please use a verified Google account.')
@@ -36,7 +46,14 @@ router.post('/google', function(request, response) {
         });
 });
 
+// This is for development purposes only it allows this route to exist
 if (process.env.DEVELOPMENT_MODE == 'true') {
+    /**
+     * POST /authentication/testing
+     * This responds with a JSON Web Token,
+     * Creates a new user with googleEmail to simulate
+     * a successful entry
+     */
     router.post('/testing', function(request, response) {
         // we just assign user as valid randomly for development
         new User({

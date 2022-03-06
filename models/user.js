@@ -1,3 +1,7 @@
+/**
+ * This is the User Schema Definition
+ * Literally, a user in the site.
+ */
 const mongoose = require('mongoose');
 const uuidv4 = require('uuid').v4;
 

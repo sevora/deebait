@@ -1,3 +1,8 @@
+/**
+ * This is the Dashboard page and it should only render
+ * when user is authenticated. It has Landing Page as its sibling.
+ * And only one of them is rendered at a time.
+ */
 import { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
