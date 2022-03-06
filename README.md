@@ -49,7 +49,7 @@ REACT_APP_DEVELOPMENT_MODE="true"
 ## Project Structure
 ### Backend
 <details><summary>Show Directory Tree</summary>
-<p>
+
 ```
 .
 ├── cli.js
@@ -71,15 +71,15 @@ REACT_APP_DEVELOPMENT_MODE="true"
 │   └── connection.js
 └── TODO
 ```
-</p>
 </details>
+
 This is a simple and straightforward backend file management and structure. `./models` contain the [Mongoose Schema Definitions](https://mongoosejs.com/docs/guide.html), `./routes` contain the routes made with Express Router instance, and `./sockets` contain the implementation of the 
 websockets. The main script to run for the server is obviously named `server.js` and CLI-tool for
 manual database operations is `cli.js`
 
 ### Frontend
 <details><summary>Show Directory Tree</summary>
-<p>
+
 ```
 deebait-react
 ├── package.json
@@ -133,6 +133,6 @@ deebait-react
     ├── setupTests.js
     └── Theme.js
 ```
-</p>
 </details>
+
 This is written on [React v17](https://reactjs.org/blog/2020/10/20/react-v17.html). Currently looking at it, it could be messy since all components are on the same folder and there is no clear hierarchy of how things are. Would like to separate them by folder at a later date or like at least add a chart here that shows the hierarchy.
