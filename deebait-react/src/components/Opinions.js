@@ -1,5 +1,5 @@
 /**
- * 
+ * This is the opinions dashboard.
  */
 import { Component } from 'react';
 import axios from 'axios';
