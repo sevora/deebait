@@ -124,10 +124,11 @@ class Home extends Component {
         if (token) {
             headers = { Authorization: `Bearer ${token}` };
             
-            axios.get(process.env.REACT_APP_API_URL + '/user/check', { headers, cancelToken: this.signal })
+            axios.get(process.env.REACT_APP_API_URL + '/user/check', { headers, cancelToken: this.signal.token })
             .then(() => {
                 this.setState({ headers });
             }).catch((error) => {
+                console.log(error)
                 if (error.response && error.response.data.title === 'InvalidUser') {
                     localStorage.removeItem('token');
                     this.setState({ headers: {} });

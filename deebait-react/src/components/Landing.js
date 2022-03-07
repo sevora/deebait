@@ -54,7 +54,7 @@ class Landing extends Component {
      * @param response 
      */
     onSuccessGoogle(response) { 
-        axios.post(process.env.REACT_APP_API_URL + '/authentication/google', { tokenId: response.tokenId, cancelToken: this.signal  })
+        axios.post(process.env.REACT_APP_API_URL + '/authentication/google', { tokenId: response.tokenId, cancelToken: this.signal.token  })
             .then(response => {
                 this.props.onSuccessfulAuthentication(response.data.token);
             }).catch((error) => {
