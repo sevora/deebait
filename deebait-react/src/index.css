@@ -41,3 +41,17 @@ div.MuiInputBase-adornedStart button span {
     border-radius: 10px;
     border: 3px solid #ffffff;
   }
+
+  .right-triangle {
+    padding: 0;
+    margin: 0;
+  }
+
+  .right-triangle:after {    
+    content: '';
+    border-bottom: 10vh solid #ff1744;
+    border-left: 100vw solid transparent;
+    width: 0;
+    position: absolute;
+    right: 0px;
+  }
