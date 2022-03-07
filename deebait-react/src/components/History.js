@@ -72,7 +72,7 @@ class History extends Component {
     }
 
     componentDidMount() {
-        axios.get(process.env.REACT_APP_API_URL + '/user/threads/past', { headers: this.props.headers, cancelToken: this.signal })
+        axios.get(process.env.REACT_APP_API_URL + '/user/threads/past', { headers: this.props.headers, cancelToken: this.signal.token })
         .then((response) => {
             let threads = response.data.threads.map(thread => {
                 thread.expiresAt = addDays(thread.createdAt, 7);

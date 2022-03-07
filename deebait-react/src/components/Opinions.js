@@ -45,7 +45,7 @@ class Opinions extends Component {
         let topicID = topic.topicID;
         let choiceID = topic.choices.find(choice => choice.choiceValue === answer).choiceID;
 
-        axios.post(process.env.REACT_APP_API_URL + '/user/topics/unanswered/set', { topicID, choiceID, cancelToken: this.signal }, { headers: this.props.headers })
+        axios.post(process.env.REACT_APP_API_URL + '/user/topics/unanswered/set', { topicID, choiceID, cancelToken: this.signal.token }, { headers: this.props.headers })
         .then((response) => {
 
             if (topicsUnanswered.length === 0) this.getUnansweredTopics();
