@@ -15,6 +15,8 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
+import Footer from './Footer.js';
+
 class Landing extends Component {
     constructor(props) {
         super(props);
@@ -75,47 +77,72 @@ class Landing extends Component {
 
     render() {
         return (
-            <Grid container>
-                <Grid item container xs={12} md={7} sx={{ minHeight: { xs: "70vh", md: "100vh" } }}>
+            <Grid container sx={{ overflowX: 'hidden' }}>
+                <Grid item container xs={12} pt={4} pb={4} sx={{ minHeight: '90vh' }}>
                     <Grid item container xs={12} alignItems="center" justifyContent="center" height="100%">
-                        <Grid item xs={12}>
-                            <Typography variant="h1" textAlign="center">
-                                dee<Box color="primary.main" display="inline">bait</Box>
+                        <Grid item xs={12} mb={"-100px"}>
+                            <img 
+                                alt="Logo"
+                                src={`${process.env.PUBLIC_URL}/images/Logo_Large.svg`} 
+                                style={
+                                    { 
+                                        display: 'block', 
+                                        height: '100px', 
+                                        width: 'auto', 
+                                        marginLeft: 'auto', 
+                                        marginRight: 'auto' 
+                                    }
+                                }
+                            />
+                            <Typography variant="h2" textAlign="center">
+                                <Box display="inline" fontWeight="200">dee</Box>
+                                <Box display="inline" fontWeight="400" color="primary.main">bait</Box>
                             </Typography>
-                            <Typography variant="h4" textAlign="center">
+                            <Typography variant="h4" textAlign="center" fontWeight="lighter">
                                 The perfect place to argue.
                             </Typography>
+                            <Box mt={'-15px'}>
+                                <Footer/>
+                            </Box>
+                        </Grid>
+                        <Grid item container xs={12}>
+                            <Grid item container xs={12} justifyContent="center" alignContent="center">
+                                { process.env.REACT_APP_DEVELOPMENT_MODE !== 'true' ? 
+                                    <GoogleLogin
+                                        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                                        buttonText="LOGIN WITH GOOGLE"
+                                        onSuccess={this.onSuccessGoogle}
+                                        onFailure={this.onFailureGoogle}
+                                        cookiePolicy={'single_host_origin'}
+                                    /> :
+                                    <Button onClick={this.onTestButtonClick} startIcon={<LoginIcon/>} variant="contained">Log-in Development</Button>
+                                }
+                            </Grid>
+                            <Grid item xs={12} mt={2} ml={2} mr={2}>
+                                <Typography textAlign="center" variant="subtitle2">
+                                    By logging in, you agree to our <MaterialLink href={process.env.PUBLIC_URL + "/terms-of-service.html"} target="_blank" rel="noreferrer">Terms of Service</MaterialLink>, <MaterialLink href={process.env.PUBLIC_URL + "/privacy-policy.html"} target="_blank" rel="noreferrer">Privacy Policy</MaterialLink>, and <MaterialLink href={process.env.PUBLIC_URL + "/cookie-policy.html"} target="_blank" rel="noreferrer">Cookie Policy</MaterialLink>.
+                                </Typography>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item container xs={12} md={5} p={2} justifyContent="center" alignContent="center" >
-                    <Grid item>
-                        { process.env.REACT_APP_DEVELOPMENT_MODE !== 'true' ? 
-                            <GoogleLogin
-                                clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-                                buttonText="LOGIN WITH GOOGLE"
-                                onSuccess={this.onSuccessGoogle}
-                                onFailure={this.onFailureGoogle}
-                                cookiePolicy={'single_host_origin'}
-                            /> :
-                            <Button onClick={this.onTestButtonClick} startIcon={<LoginIcon/>} variant="contained">Log-in Development</Button>
+                <div 
+                    className='right-triangle'
+                    style={
+                        {   
+                            minWidth: '100vw',
+                            minHeight: '10vh', 
+                            backgroundColor: 'primary.light', 
                         }
-                    </Grid>
-                    <Grid item md={12}>
-                        <Box m={3}>
-                            <Typography textAlign="center" variant="subtitle2">
-                                By logging in, you agree to our <MaterialLink href={process.env.PUBLIC_URL + "/terms-of-service.html"} target="_blank" rel="noreferrer">Terms of Service</MaterialLink>, <MaterialLink href={process.env.PUBLIC_URL + "/privacy-policy.html"} target="_blank" rel="noreferrer">Privacy Policy</MaterialLink>, and <MaterialLink href={process.env.PUBLIC_URL + "/cookie-policy.html"} target="_blank" rel="noreferrer">Cookie Policy</MaterialLink>.
-                            </Typography>
-                        </Box>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} m={3}>
-                    <Typography variant="h2" textAlign="right">
+                    }>
+                </div>
+                <Grid pt={5} pb={2} item xs={12} sx={{ minHeight: '20vh', backgroundColor: 'primary.main', color: 'primary.light' }}>
+                    <Typography variant="h6" fontWeight="bold" textAlign="center">
                         "Anonymously express your views and beliefs with others through one-on-one 
                         chat"
                     </Typography>
-                    <Typography variant="subtitle1" textAlign="right">
-                        <MaterialLink component={Link} to={'/see/faq'}>Why the login? I thought this was supposed to be anonymous?</MaterialLink>
+                    <Typography variant="subtitle1" textAlign="center" sx={{ marginLeft: '20vw' }}>
+                        <MaterialLink color="primary.light" component={Link} to={'/see/faq'}>Why the login? I thought this was supposed to be anonymous?</MaterialLink>
                     </Typography>
                 </Grid>
             </Grid>

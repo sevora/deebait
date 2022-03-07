@@ -3,7 +3,7 @@ const themeOptions = {
     type: 'light',
     primary: {
       main: '#ff1744',
-      light: '#e0e0e0',
+      light: '#ffffff',
       dark: '#616161',
     },
     secondary: {

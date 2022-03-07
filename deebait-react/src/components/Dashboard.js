@@ -18,6 +18,7 @@ import History from './History.js';
 import HistoryView from './HistoryView.js';
 import FAQ from './FAQ.js';
 import Settings from './Settings.js';
+import Footer from './Footer.js';
 
 class Dashboard extends Component {
     constructor(props) {
@@ -60,6 +61,7 @@ class Dashboard extends Component {
                             <Route exact path="/faq" children={<FAQ headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                             <Route exact path="/settings" children={<Settings headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                         </Switch>
+                        <Footer/>
                     </Box>
                 </Box>
                 <Paper variant="outlined" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: { sx: 'block', md: 'none' } }} >
