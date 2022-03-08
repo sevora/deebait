@@ -27,6 +27,7 @@ function onConnectIO(socket, io) {
     try {
         token = parseHeaderToToken(socket.handshake.headers['deebaitheader']);
     } catch(error) {
+        socket.emit('log-out');
         return socket.disconnect();
     }
 
@@ -34,7 +35,10 @@ function onConnectIO(socket, io) {
     if (!token) return;
 
     decodeToken(token, async (error, decoded) => {
-        if (error) return socket.disconnect();
+        if (error) {
+            socket.emit('log-out');
+            return socket.disconnect();
+        }
         let [user, userError] = await resolve( User.findOne({ userID: decoded.userID }) );
         if (userError || user.isBanned) return socket.disconnect();
 
