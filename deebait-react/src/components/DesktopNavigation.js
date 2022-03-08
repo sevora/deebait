@@ -6,9 +6,7 @@ import ForumIcon from '@mui/icons-material/Forum';
 import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Typography from '@mui/material/Typography';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -43,9 +41,7 @@ function DesktopNavigation({ sx={} }) {
         <Drawer variant="permanent" anchor="left" sx={sx}>    
             <List>
                 <ListItem style={{justifyContent:'center'}}>
-                    <Typography variant="h5">
-                        dee<Box color="primary.main" display="inline">bait</Box>
-                    </Typography>
+                    <img alt="Deebait" src={`${process.env.PUBLIC_URL}/images/Logo_Small.svg`} style={{ width: 'auto', height: '30px' }} />
                 </ListItem>
                 {
                     links.map((link, index) => {

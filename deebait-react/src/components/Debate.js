@@ -184,15 +184,17 @@ class Debate extends Component {
 
                     <div style={{ float:"left", clear: "both" }} ref={(element) => { this.messagesEnd = element; }}></div>
                 </Box>
-                <TextField 
-                    disabled={this.state.onQueue || !this.state.connected}
-                    value={this.state.inputValue}
-                    onChange={this.onInputChange}
-                    onKeyPress={this.onClickEnter}
-                    placeholder="Enter message here..." 
-                    InputProps={{ startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue || !this.state.connected} />, endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue || !this.state.connected} />}}
-                    fullWidth
-                />
+                <Box>
+                    <TextField 
+                        disabled={this.state.onQueue || !this.state.connected}
+                        value={this.state.inputValue}
+                        onChange={this.onInputChange}
+                        onKeyPress={this.onClickEnter}
+                        placeholder="Enter message here..." 
+                        InputProps={{ startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue || !this.state.connected} />, endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue || !this.state.connected} />}}
+                        fullWidth
+                    />
+                </Box>
             </Box>
         );
     }
