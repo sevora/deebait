@@ -52,7 +52,7 @@ class Dashboard extends Component {
                     <Box sx={{display: {sx: 'block', md: 'none'}}}>
                         <BrandBar />
                     </Box>
-                    <Box ml={2} mr={2} mb={3} pt={3}>
+                    <Box ml={2} mr={2} pb={'70px'} pt={3}>
                         <Switch>
                             <Route exact path="/" children={<Opinions headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
                             <Route exact path="/debate" children={<Debate headers={this.state.headers} onSessionExpired={this.state.onSessionExpired} onAlert={this.props.onAlert} />}></Route>
