@@ -60,7 +60,7 @@ if (process.env.DEVELOPMENT_MODE == 'true') {
             googleEmail: (() => uuidv4())(),
         }).save(function(error, user) {
             if (error) return response.status(400).json(error);
-            let token = jwt.sign({ userID: user.userID }, process.env.JWT_SECRET, { expiresIn: '24h' });
+            let token = jwt.sign({ userID: user.userID }, process.env.JWT_SECRET, { expiresIn: '7d' });
             response.status(200).json({ token });
         });
     });

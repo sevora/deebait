@@ -1,3 +1,10 @@
+/**
+ * This is the Debate Page where sockets are used
+ * to connect client-server-client in real-time.
+ * The process goes like this, client connects either gets queued up or matched.
+ * On match, client can send messages to the server and server passes that message to 
+ * the right client.
+ */
 import { Component } from 'react';
 import { io } from 'socket.io-client';
 import { Prompt } from 'react-router-dom';
@@ -52,15 +59,28 @@ class Debate extends Component {
         onAlert: function() { return null; }
     }
 
+    /**
+     * 
+     */
     removeTypingTimeout() {
         this.isTyping = false;
         this.socket.emit('not-typing');
     }
 
+    /**
+     * This code runs whenever the input is changed.
+     * @param event This is an input change event
+     */
     onInputChange(event) {
         if (event.target.value.length <= 250) {
             this.setState({ inputValue: event.target.value, sureEnd: false });
 
+            /**
+             * When the user types and they aren't emitting the is typing yet,
+             * then emit it and set it as is typing otherwise we want to 
+             * make the is-typing event longer by preventing the removeTypingIndex
+             * code from running.
+             */
             if (!this.isTyping) {
                 this.isTyping = true;
                 this.socket.emit('is-typing');
@@ -73,12 +93,22 @@ class Debate extends Component {
         }
     }
 
+    /**
+     * This code runs for every keypress but only does its job when 
+     * Enter is clicked.
+     * @param event A Keypress Event.
+     */
     onClickEnter(event) {
         if (event.charCode === 13) {
             this.onSendMessage();
         }
     }
 
+    /**
+     * You know there are two ways the message send action is done, 
+     * either by clicking the send button or clicking enter on keyboard.
+     * That's why I did this.
+     */
     onSendMessage() {
         if (this.state.connected && !this.state.onQueue) {
             this.socket.emit('send-to-partner', { message: this.state.inputValue });
@@ -99,10 +129,9 @@ class Debate extends Component {
     }
 
     componentDidMount() {
-        // this.props.router.setRouteLeaveHook(this.props.route, () => {
-        //     return 'You will be disconnected once you leave this page.'
-        //   });
-
+        /**
+         * Connects the socket with the header
+         */
         this.socket = io(process.env.REACT_APP_API_URL + '/chat', {
             withCredentials: true,
             extraHeaders: {
@@ -111,16 +140,27 @@ class Debate extends Component {
             }
         });
 
+        /**
+         * On connect, server automatically adds user to queue.
+         * Thus we want to show the onQueue loader animation.
+         */
         this.socket.on('connect', () => {
             this.props.onAlert({ title: 'On Queue', text: 'You have been queued for matching. Please wait.', severity: 'warning' });
             this.setState({ differences: [], messages: [], connected: true, onQueue: true });
         });
 
+        /**
+         * 
+         */
         this.socket.on('has-partner', (data) => {
             this.props.onAlert({ title: 'Match Found', text: 'You have been matched!', severity: 'success' });
             this.setState({ differences: data.differences, onQueue: false, connected: true });
         });
 
+        /**
+         * This is when the partner has a message, and 
+         * this client should receive a message.
+         */
         this.socket.on('has-message', (data) => {
             let messages = this.state.messages.concat([{ value: data.message, sender: 'partner' }]);
             this.setState({ messages }, () => {
@@ -128,6 +168,11 @@ class Debate extends Component {
             });
         });
 
+        /**
+         * This is necessary to make sure the order of messages
+         * is proper. We only add a message to DOM as long as it is 
+         * confirmed that the partner has received it.
+         */
         this.socket.on('was-sent-to-partner', (data) => {
             let messages = this.state.messages.concat([{ value: data.message, sender: 'user' }]);
             this.setState({ messages, inputValue: '' }, () => {
@@ -135,23 +180,47 @@ class Debate extends Component {
             });
         });
 
+        /**
+         * This is for the X is typing feature.
+         */
         this.socket.on('is-partner-typing', () => {
             this.setState({ isPartnerTyping: true });
         });
 
+        /**
+         * This is for the X is typing feature.
+         * Not typing gets sent 5 seconds after a typing 
+         * message is not received.
+         */
         this.socket.on('is-partner-not-typing', () => {
             this.setState({ isPartnerTyping: false });
         });
-        
+
+        /**
+         * When the partner leaves, both the client and the partner
+         * are disconnected. They are not automatically added back to queue,
+         * will only be added back to queue when they click the queue again button
+         * or reopen the Debate Page.
+         */
         this.socket.on('partner-left', (data) => {
-            // this.socket.disconnect();
             this.setState({ connected: false, isPartnerTyping: false, disconnectMessage: 'Your deeb match has left' }, () => {
                 this.messagesEnd.scrollIntoView({ behavior: "smooth" });
             });
         });
-        // add is typing thing
+
+        /**
+         * Automatically log the user out on session expiry
+         */
+        this.socket.on('log-out', () => {
+            this.props.onSessionExpired();
+        });
+
     }
 
+    /**
+     * We want to disconnect the socket when they switch pages because
+     * it won't work properly if we don't do that.
+     */
     componentWillUnmount() {
         this.socket.disconnect();
     }
