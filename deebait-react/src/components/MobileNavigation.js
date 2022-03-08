@@ -29,7 +29,7 @@ function MobileNavigation() {
     }
 
     return (
-        <BottomNavigation sx={{width: '100%'}} value={activeLink} onChange={handleChangeLink} showLabels color="secondary">
+        <BottomNavigation sx={{ width: '100%' }} value={activeLink} onChange={handleChangeLink} showLabels color="secondary">
             <BottomNavigationAction label="Opinions" value="/" icon={<StyleIcon/>} component={Link} to={'/'} />
             <BottomNavigationAction label="Debate" value="/debate" icon={<ForumIcon/>} component={Link} to={'/debate'} />
             <BottomNavigationAction label="History" value="/history" icon={<HistoryIcon/>} component={Link} to={'/history'} />
