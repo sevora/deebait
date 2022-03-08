@@ -2,6 +2,7 @@ import { Component } from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 class FAQ extends Component {
@@ -44,6 +45,17 @@ class FAQ extends Component {
                         watch every user's actions rather we periodically run a script that figures out from thread's who the spammers are 
                         and then a moderator can verify if the user is spamming or is just using their favorite line as an introduction message
                         every time. It's not a crime to have your own opinions.
+                    </Box>
+                </Grid>
+                <Grid item xs={12} mb={3}>
+                    <Typography variant="h4">How do I add my own topic to answer?</Typography>
+                    <Box mt={2} textAlign="justify">
+                        All topics are available to everyone, therefore we try our best to provide a variety of questions 
+                        which anyone could have an answer on. If we simply add a user feature to add a topic, people could 
+                        start adding questions that are biased towards one choice more than the other which beats the purpose 
+                        of the site. Instead we would simply provide you with a form which you could fill out for you to suggest 
+                        a topic and once reviewed could possibly be added to the site.  
+                        <Link href="https://forms.gle/e7aqkwfnVZvQAPTw9" target="_blank" rel="noreferrer">Want to suggest a topic? Fill out the form here.</Link>
                     </Box>
                 </Grid>
             </Grid>
