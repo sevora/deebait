@@ -174,64 +174,86 @@ class ChatConnection extends Connection {
 
         if (this.queued) return;
 
-        let mapTopicID = topic => topic.topicID;
-        let mapChoiceID = topic => topic.choiceID;
-
         let topics = this.document.topics;
-        let topicsIDs = topics.map(mapTopicID);
-        let choiceIDs = topics.map(mapChoiceID);
+        let topicsIDs = topics.map(topic => topic.topicID);
 
+        /**
+         * 1. Gets the same topic IDs
+         * 2. Find the same topics with conflicting choices
+         * (If step 2 coundresults to 0 continue)
+         * 3. Get the topics of those with conflicting choices
+         * 4. Assign that accordingly to partners
+         * 5. If still no partner, add this to queue
+         */
         for (let index = matchQueue.length - 1; index >= 0; --index) {
             let otherTopics = matchQueue[index].document.topics;
+            let otherTopicsIDs = otherTopics.map(topic => topic.topicID);
 
-            let otherTopicsIDs = otherTopics.map(mapTopicID);
+            // [ 'topic1', 'topic2', 'topic4', 'topic5', 'topic6' ]
             let sameTopicsIDs = commonElements(topicsIDs, otherTopicsIDs);
             if (sameTopicsIDs.length == 0) continue;
             
-            let [sameTopics, sameTopicsError] = await resolve(Topic.find({ topicID: { $in: sameTopicsIDs }}).sort({ createdAt: -1}).limit(10) );
-            if (sameTopicsError) continue;   
-            let otherChoiceIDs = otherTopics.map(mapChoiceID);
+            let conflictingTopicsIDs = []; // ['topic1', 'topic2', 'topic4' ]
+            let choiceIDs = []; // [ 'choice1-topic1', 'choice2-topic2', 'choice2-topic4' ]
+            let otherChoiceIDs = []; // [ 'choice2-topic1', 'choice1-topic2', 'choice1-topic4' ]
 
-            // these parts could've been written better
-            let answers = sameTopics.map(topic => {
-                let index = topicsIDs.indexOf(topic.topicID);
-                let choiceID = choiceIDs[index];
-                return topic.choices.find(choice => choice.choiceID == choiceID).choiceValue;
-            });
-
-            let otherAnswers = sameTopics.map(topic => {
-                let index = otherTopicsIDs.indexOf(topic.topicID);
-                let choiceID = otherChoiceIDs[index];
-                return topic.choices.find(choice => choice.choiceID == choiceID).choiceValue;
-            });
-            
-            let disagreeCount = sameTopics.length - commonElements(answers, otherAnswers).length;
-
-            if (disagreeCount > 0) {
-                // set the partners correctly
-                this.partner = matchQueue[index];
-                this.partner.partner = this;
-
-                // set the topics correctly
-                this.topics = sameTopics;
-                this.partner.topics = sameTopics;
+            sameTopicsIDs.map(topicID => {
+                let choiceID = topics.find(x => x.topicID == topicID).choiceID;
+                let otherChoiceID = otherTopics.find(x => x.topicID == topicID).choiceID;
                 
-                // set the answers correctly
-                this.answers = answers;
-                this.partner.answers = otherAnswers;
+                if (choiceID !== otherChoiceID) {
+                    conflictingTopicsIDs.push(topicID);
+                    choiceIDs.push(choiceID);
+                    otherChoiceIDs.push(otherChoiceID);
+                }
+            });
 
-                // set their thread
-                let newThread = new Thread({ participantIDs: [ this.document.userID, this.partner.document.userID ] });
-                let [thread, threadError] = await resolve( newThread.save() );
-                if (threadError) return;
+            // if there are no conflicting answers to a topic in any topic, then don't match them
+            if (conflictingTopicsIDs.length == 0) continue; 
+            
+            // selectedTopics is an array of the selected topics guaranteed where both users have a conflict of answers
+            let [selectedTopics, selectedTopicsError] = await resolve(Topic.find({ topicID: { $in: conflictingTopicsIDs }}).sort({ createdAt: -1}).limit(5) );
+            if (selectedTopicsError) continue;
 
-                this.thread = thread;
-                this.partner.thread = this.thread;
-                this.partner.queued = false; // not necessary but let's add it to prevent possible future problems
+            let answers = [];
+            let otherAnswers = [];
 
-                matchQueue.splice(index, 1);
-                return;
-            }
+            // this just gets their conflicting answers (guaranteed to be conflicting)
+            selectedTopics.map(topic => {
+                let index = conflictingTopicsIDs.indexOf(topic.topicID);
+                let answerID = choiceIDs[index];
+                let answer = topic.choices.find(x => x.choiceID == answerID).choiceValue;
+
+                let otherAnswerID = otherChoiceIDs[index];
+                let otherAnswer = topic.choices.find(x => x.choiceID == otherAnswerID).choiceValue;
+
+                answers.push(answer);
+                otherAnswers.push(otherAnswer);
+            });
+
+            // set the partners correctly
+            this.partner = matchQueue[index];
+            this.partner.partner = this;
+
+            // set the topics correctly
+            this.topics = selectedTopics;
+            this.partner.topics = selectedTopics;
+            
+            // set the answers correctly
+            this.answers = answers;
+            this.partner.answers = otherAnswers;
+
+            // set their thread
+            let newThread = new Thread({ participantIDs: [ this.document.userID, this.partner.document.userID ] });
+            let [thread, threadError] = await resolve( newThread.save() );
+            if (threadError) continue;
+
+            this.thread = thread;
+            this.partner.thread = this.thread;
+            this.partner.queued = false; // not necessary but let's add it to prevent possible future problems
+
+            matchQueue.splice(index, 1);
+            return;
         }
 
         matchQueue.push(this);
@@ -245,9 +267,7 @@ class ChatConnection extends Connection {
     getConflictingAnswers() {
         let conflicting = [];
         if (this.answers) this.answers.forEach((answer, index) => {
-            if (this.partner.answers[index] != answer) {
-                conflicting.push({ question: this.topics[index].question, answer, partnerAnswer: this.partner.answers[index] });
-            }
+            conflicting.push({ question: this.topics[index].question, answer, partnerAnswer: this.partner.answers[index] });
         });
         return conflicting;
     }
