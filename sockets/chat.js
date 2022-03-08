@@ -186,6 +186,7 @@ class ChatConnection extends Connection {
 
             let otherTopicsIDs = otherTopics.map(mapTopicID);
             let sameTopicsIDs = commonElements(topicsIDs, otherTopicsIDs);
+            if (sameTopicsIDs.length == 0) continue;
             
             let [sameTopics, sameTopicsError] = await resolve(Topic.find({ topicID: { $in: sameTopicsIDs }}).sort({ createdAt: -1}).limit(10) );
             if (sameTopicsError) continue;   

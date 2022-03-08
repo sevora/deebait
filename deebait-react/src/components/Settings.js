@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
+import MaterialLink from '@mui/material/Link';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 
@@ -45,6 +46,13 @@ class Settings extends Component {
                         <ListItemText 
                             primary='Frequently Asked Questions'
                             secondary='Click to see common questions regarding the site and our answer.'
+                        />
+                    </ListItem>
+
+                    <ListItem button divider component={MaterialLink} href="https://forms.gle/e7aqkwfnVZvQAPTw9" target="_blank" rel="noreferrer">
+                        <ListItemText 
+                            primary='Suggest a Topic'
+                            secondary='Click to get redirected to a Google Form where you can suggest a topic.'
                         />
                     </ListItem>
                 </List>
