@@ -223,6 +223,7 @@ class Debate extends Component {
      */
     componentWillUnmount() {
         this.socket.disconnect();
+        this.socket = null;
     }
 
     render() {
