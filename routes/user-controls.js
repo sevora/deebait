@@ -80,7 +80,7 @@ router.get('/topics/unanswered', [decodeTokenMiddleware, handleBadDecodedRequest
             Topic
                 .find(query)
                 .select(['-_id', 'topicID', 'question', 'choices', 'isLimitedTime' ])
-                .sort({ createdAt: -1})
+                .sort({ isLimitedTime: -1, createdAt: -1 })
                 .limit(DOCUMENTS_PER_PAGE) 
         );
 
