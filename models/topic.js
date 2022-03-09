@@ -36,8 +36,11 @@ const topicSchema =  new Schema({
                 default: () => uuidv4()
             }
         }
-    ]
-
+    ],
+    isLimitedTime: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Topic', topicSchema, 'topics');
