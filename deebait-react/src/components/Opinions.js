@@ -60,7 +60,7 @@ class Opinions extends Component {
     }
 
     getUnansweredTopics() {
-        axios.get(process.env.REACT_APP_API_URL + '/user/topics/unanswered', { headers: this.props.headers })
+        axios.get(process.env.REACT_APP_API_URL + '/user/topics/unanswered', { headers: this.props.headers, cancelToken: this.signal.token })
         .then((response) => {
             this.setState({ topicsUnanswered: response.data.topics });
         }).catch(this.errorHandler);
@@ -71,7 +71,7 @@ class Opinions extends Component {
         this.getUnansweredTopics();
 
         // get answered topics - this is limited to 30 items from server
-        axios.get(process.env.REACT_APP_API_URL + '/user/topics/answered', { headers: this.props.headers })
+        axios.get(process.env.REACT_APP_API_URL + '/user/topics/answered', { headers: this.props.headers, cancelToken: this.signal.token })
         .then((response) => {
             
             let topicsAnswered = response.data.topics.map(topic => {
@@ -102,7 +102,14 @@ class Opinions extends Component {
                     </Box>   
                     <Box mb={3}>
                         { currentTopic ? (
-                                <OpinionCard width={800} question={currentTopic.question} choiceA={currentTopic.choices[0].choiceValue} choiceB={currentTopic.choices[1].choiceValue} onClick={this.onClickOpinion}/> 
+                                <OpinionCard 
+                                    width={800} 
+                                    question={currentTopic.question} 
+                                    choiceA={currentTopic.choices[0].choiceValue} 
+                                    choiceB={currentTopic.choices[1].choiceValue} 
+                                    onClick={this.onClickOpinion}
+                                    limitedTime={currentTopic.isLimitedTime}
+                                /> 
                             ) : (
                                 <Alert severity="warning">We're out of topics. Please chat instead if you want.</Alert>   
                             )

@@ -260,7 +260,11 @@ class Debate extends Component {
                         onChange={this.onInputChange}
                         onKeyPress={this.onClickEnter}
                         placeholder="Enter message here..." 
-                        InputProps={{ startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue || !this.state.connected} />, endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue || !this.state.connected} />}}
+                        InputProps={{ 
+                            startAdornment: <EndButton onClick={this.onEndConnection} value={this.state.sureEnd ? 'Sure?' : 'End'} disabled={this.state.onQueue || !this.state.connected} />, 
+                            endAdornment: <SendButton onClick={this.onSendMessage} disabled={this.state.onQueue || !this.state.connected} />,
+                            autoComplete: 'off'
+                        }}
                         fullWidth
                     />
                 </Box>
