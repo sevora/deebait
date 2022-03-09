@@ -110,7 +110,7 @@ class Debate extends Component {
      * That's why I did this.
      */
     onSendMessage() {
-        if (this.state.connected && !this.state.onQueue) {
+        if (this.state.connected && !this.state.onQueue && this.state.inputValue.trim().length > 0) {
             this.socket.emit('send-to-partner', { message: this.state.inputValue });
         }
     }
