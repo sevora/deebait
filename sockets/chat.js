@@ -133,6 +133,9 @@ class ChatConnection extends Connection {
 
                     this.partner.threadSaves = ++this.threadSaves;
                 }
+            } else {
+                // else emit that partner has left
+                socket.emit('partner-left');
             }
         });
 

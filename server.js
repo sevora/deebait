@@ -39,6 +39,10 @@ const userControlsRouter = require('./routes/user-controls.js');
 app.use('/authentication', authenticationRouter);
 app.use('/user', userControlsRouter);
 
+app.get('/public/connections', function(request, response) {
+    response.status(200).json({ connected: io.engine.clientsCount });
+});
+
 // websockets
 io.of('/chat').on('connection', function(socket) {
     require('./sockets/chat.js')(socket, io);
