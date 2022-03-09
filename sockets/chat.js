@@ -216,7 +216,7 @@ class ChatConnection extends Connection {
             if (conflictingTopicsIDs.length == 0) continue; 
             
             // selectedTopics is an array of the selected topics guaranteed where both users have a conflict of answers
-            let [selectedTopics, selectedTopicsError] = await resolve(Topic.find({ topicID: { $in: conflictingTopicsIDs }}).sort({ createdAt: -1}).limit(5) );
+            let [selectedTopics, selectedTopicsError] = await resolve(Topic.find({ topicID: { $in: conflictingTopicsIDs }}).sort({ createdAt: -1 }).limit(5) );
             // it is possible that selected topics is empty if all their conflicting topics were deleted from the database
             if (selectedTopicsError || selectedTopics.length == 0 ) continue;
 

@@ -46,7 +46,7 @@ router.get('/check', [decodeTokenMiddleware, handleBadDecodedRequest], async fun
         Topic
             .find(query)
             .select(['-_id', '-createdAt', '-updatedAt'])
-            .sort({ createdAt: 1})
+            .sort({ createdAt: -1})
             .limit(DOCUMENTS_PER_PAGE) 
         );
 
