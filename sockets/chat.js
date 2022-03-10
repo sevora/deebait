@@ -112,10 +112,10 @@ class ChatConnection extends Connection {
     onRegisterSocket(socket) {
         socket.on('send-to-partner', data => {
             let message = data ? data.message : null;
-
+            
             if (this.partner && message) {
                 // We limit messages to 250 characters all the time.
-                message = message.trim().substring(0, 250);
+                message = safeToString(message).trim().substring(0, 250);
                 socket.emit('was-sent-to-partner', { message });
                 this.partner.emit('has-message', { message });
                 
@@ -133,9 +133,6 @@ class ChatConnection extends Connection {
 
                     this.partner.threadSaves = ++this.threadSaves;
                 }
-            } else {
-                // else emit that partner has left
-                socket.emit('partner-left');
             }
         });
 
@@ -308,4 +305,16 @@ function commonElements(array1, array2) {
 
     return result;
 }
+
+function safeToString(x) {
+    switch (typeof x) {
+      case 'object':
+        return 'object';
+      case 'function':
+        return 'function';
+      default:
+        return x + '';
+    }
+  }
+  
 module.exports = onConnectIO;
