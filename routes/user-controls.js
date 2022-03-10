@@ -158,7 +158,7 @@ router.post('/threads/view', [decodeTokenMiddleware, handleBadDecodedRequest], a
         return response.status(400).send({ title: 'InvalidOperation', message: 'Dude, wtf. Stop.' });
     }
 
-    let [thread, threadError] = await resolve( Thread.findOne({ threadID }) );
+    let [thread, threadError] = await resolve( Thread.findOne({ threadID, participantIDs: { $in: user.userID } }) );
     if (threadError) return response.status(400).send({ title: 'ThreadNotFound', message: 'This thread does not exist.' });
 
     let formattedThread = { messages: [], createdAt: thread.createdAt };

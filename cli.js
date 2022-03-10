@@ -20,13 +20,15 @@ program
     .argument('<question>', 'The question at hand.')
     .argument('<choiceA>', 'The first choice.')
     .argument('<choiceB>', 'The second choice.')
-    .action((question, choiceA, choiceB) => {
+    .argument('<isLimitedTime>', 'Whether the question is limited time or not')
+    .action((question, choiceA, choiceB, isLimitedTime) => {
         new Topic({
             question,
             choices: [ 
                 { choiceValue: choiceA }, 
                 { choiceValue: choiceB }
-            ]
+            ],
+            isLimitedTime: isLimitedTime == 'true'
         }).save(function(error, topic) {
             if (error) return console.log(`Failed operation:\n${prettifyJSON(error)}`);
             console.log(`Successfully added entry on topics:\n${prettifyJSON(topic)}`);
