@@ -3,7 +3,7 @@
 Deebait is a website made for 1-to-1 anonymous chat but with a twist. Users select a preference regarding a topic and get matched up with someone who has answers opposite to theirs. For example, cat lovers will get matched with dog lovers and so on. The point is for people to have a debate.
 
 ## Screenshot
-A screenshot with the mobile layout:
+A screenshot with the mobile layout: <br />
 ![Deebait Screenshot](screenshot.png)
 
 ## Setup and Installation for Development
