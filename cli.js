@@ -3,6 +3,7 @@ require('dotenv').config();
 const { Command } = require('commander');
 const mongoose = require('mongoose');
 
+const User = require('./models/user.js');
 const Topic = require('./models/topic.js');
 
 mongoose.connect(process.env.ATLAS_URL);
@@ -37,6 +38,18 @@ program
             process.exit();
         });
     });
+
+program
+    .command('remove-fake')
+    .description('Remove fake user created for testing.')
+    .action(() => {
+        User.deleteMany({ googleEmail: { $regex: /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/ } })
+        .then(function(info){
+            console.log(`${info.deletedCount} fake users removed!`);
+        });
+    });
+    
+
 
 function prettifyJSON(object) {
     return JSON.stringify(object, null, 2);

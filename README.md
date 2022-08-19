@@ -1,4 +1,7 @@
 # Deebait
+## About
+Deebait is a website made for 1-to-1 anonymous chat but with a twist. Users select a preference regarding a topic and get matched up with someone who has answers opposite to theirs. For example, cat lovers will get matched with dog lovers and so on. The point is for people to have a debate.
+
 ## Setup and Installation for Development
 ### Backend
 In the root folder of this repository run, `npm install` to get all necessary packages for the backend. If you wish to exclude development dependencies, do `npm install --production`.
