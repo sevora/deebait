@@ -1,4 +1,4 @@
-# Deebait
+# deebait &middot; ![GitHub](https://img.shields.io/github/license/sevora/deebait) ![GitHub repo size](https://img.shields.io/github/repo-size/sevora/deebait) 
 An anonymous chatting website but with a twist.
 
 ## Overview
