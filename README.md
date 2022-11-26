@@ -145,3 +145,7 @@ deebait-react
 </details>
 
 This is written on [React v17](https://reactjs.org/blog/2020/10/20/react-v17.html). Currently looking at it, it could be messy since all components are on the same folder and there is no clear hierarchy of how things are. Would like to separate them by folder at a later date or like at least add a chart here that shows the hierarchy.
+
+# To Improve
+- [ ] Add more third-party sites for authentication (Twitter, Facebook, etc...)
+- [ ] Improve Google Authentication Process
