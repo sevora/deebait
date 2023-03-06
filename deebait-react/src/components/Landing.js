@@ -67,8 +67,9 @@ class Landing extends Component {
      * and it is called whenever authentication fails. Somehow it gets called also
      * when the load pages by default, they should really fix that.
      */
-    onFailureGoogle() {
+    onFailureGoogle(error) {
         this.props.onAlert({ title: 'Login Failed', message: 'Google-Login Failed', severity: 'error' })
+        console.log(error)
     }
 
     componentWillUnmount() {
@@ -109,10 +110,10 @@ class Landing extends Component {
                             <Grid item container xs={12} justifyContent="center" alignContent="center">
                                 { process.env.REACT_APP_DEVELOPMENT_MODE !== 'true' ? 
                                     <GoogleLogin
-                                        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                                        clientId="51708135362-e862eunj3v5n1ca3sr2okvv25o0isdvb.apps.googleusercontent.com"
                                         buttonText="LOGIN WITH GOOGLE"
                                         onSuccess={this.onSuccessGoogle}
-                                        onFailure={this.onFailureGoogle}
+                                        onFailure={(error) => {this.onFailureGoogle(error)}}
                                         cookiePolicy={'single_host_origin'}
                                     /> :
                                     <Button onClick={this.onTestButtonClick} startIcon={<LoginIcon/>} variant="contained">Log-in Development</Button>
