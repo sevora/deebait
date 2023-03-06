@@ -110,7 +110,7 @@ class Landing extends Component {
                             <Grid item container xs={12} justifyContent="center" alignContent="center">
                                 { process.env.REACT_APP_DEVELOPMENT_MODE !== 'true' ? 
                                     <GoogleLogin
-                                        clientId="51708135362-e862eunj3v5n1ca3sr2okvv25o0isdvb.apps.googleusercontent.com"
+                                        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
                                         buttonText="LOGIN WITH GOOGLE"
                                         onSuccess={this.onSuccessGoogle}
                                         onFailure={(error) => {this.onFailureGoogle(error)}}
