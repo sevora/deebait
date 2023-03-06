@@ -48,6 +48,11 @@ io.of('/chat').on('connection', function(socket) {
     require('./sockets/chat.js')(socket, io);
 });
 
+app.use((e,req,res,next) => {
+    const {statusCode,message,data} = e;
+    res.status(statusCode).json({message,data});
+})
+
 const connection = mongoose.connection;
 
 // only start the server once database connection is open
