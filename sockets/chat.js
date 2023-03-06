@@ -5,7 +5,7 @@ const Thread = require('../models/thread.js');
 
 const Connection = require('./connection.js');
 const { resolve } = require('../helper.js');
-const { decodeToken } = require('../routes/decode-token');
+const { decodeToken } = require('../middlewares/isAuth.js');
 
 let connections = {};
 let matchQueue = [];
@@ -21,7 +21,7 @@ let matchQueue = [];
  * @param io 
  * @returns 
  */
-function onConnectIO(socket, io) {
+async function onConnectIO(socket, io) {
     let token;
 
     try {
@@ -33,27 +33,23 @@ function onConnectIO(socket, io) {
 
     // I think I can remove this line lol
     if (!token) return;
+    const session = await decodeToken(token)
+    const [user,userError] = await resolve( User.findOne({ userID: session.userID }) );
+    if (userError || user.isBanned) return socket.disconnect();
+    if (!session) return socket.disconnect();
 
-    decodeToken(token, async (error, decoded) => {
-        if (error) {
-            socket.emit('log-out');
-            return socket.disconnect();
-        }
-        let [user, userError] = await resolve( User.findOne({ userID: decoded.userID }) );
-        if (userError || user.isBanned) return socket.disconnect();
+    // The piece of code below either gets an existing user connection
+    // or creates a new one if it doesn't exist.
+    let connection = connections[user.userID];
 
-        // The piece of code below either gets an existing user connection
-        // or creates a new one if it doesn't exist.
-        let connection = connections[user.userID];
+    if (!connection) {
+        connections[user.userID] = new ChatConnection(user.userID, user);
+        connection = connections[user.userID]   
+        await connection.findPartner();
+    }
 
-        if (!connection) {
-            connections[user.userID] = new ChatConnection(user.userID, user);
-            connection = connections[user.userID]   
-            await connection.findPartner();
-        }
+    connection.addSocket(socket);
 
-        connection.addSocket(socket);
-    });
 }
 
 /**
